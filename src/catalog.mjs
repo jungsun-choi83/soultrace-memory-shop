@@ -10,6 +10,7 @@ export const SHOP = Object.freeze({
   maxQuantity: 9,
   maxCartLines: 20,
   cartKey: 'soultrace-shop:cart:v1',
+  langKey: 'soultrace-shop:lang:v1', // Language only. Never store names, photos, letters or addresses.
   supportEmail: null,
   legalOperator: null,
 });
@@ -41,7 +42,7 @@ export const PRODUCTS = Object.freeze([
     name: '미니 메모리북 키링', english: 'Always, a Little Closer', tag: 'THE MINI BOOK',
     short: '가방 한켠에 달아두는, 우리만의 작은 책.',
     description: '첫 만남부터 좋아했던 순간까지. 작은 페이지에 아이의 이야기를 담아, 손이 닿는 가까운 곳에 간직하세요.',
-    art: 'book', image: 'mini-book-front.webp', showsLetter: false, photoRule: 'required',
+    art: 'book', image: 'photo-keyring.png', showsLetter: false, photoRule: 'required',
     variants: [
       { id: 'cream', name: '크림 베이지', color: '#e8dcc5' },
       { id: 'mocha', name: '모카 브라운', color: '#998065' },
@@ -64,5 +65,5 @@ export const FAQS = [
   ['NFC 인식표와 메모리카드는 어떻게 다른가요?', '마음을 담은 편지 세트(24,900원) 구성은 편지, 엽서, NFC 인식표입니다. NFC 인식표는 제공된 가죽 홀더 시안입니다. NFC 메모리카드(9,900원)는 1번 상품으로, NFC가 내장된 포토카드이며 생성된 편지 또는 사진을 액션으로 담아 보내는 방향입니다. 현재 버전에서는 실제 NFC 쓰기·전송·앱 연동을 하지 않으며, 칩 사양과 액션 범위는 확인 예정입니다.'],
   ['지금 결제하거나 실제 상품을 주문할 수 있나요?', '현재는 스토어 시안입니다. 장바구니와 주문 미리보기까지 이용할 수 있지만 결제, 주문 접수, 제작 요청은 발생하지 않습니다. 결제대행사와 주문 서버를 연결하고 상품 정책을 확정한 뒤 실판매를 시작할 수 있습니다.'],
   ['제작·배송과 교환은 어떻게 진행되나요?', '제작 기간, 배송비, 교환·취소 정책은 아직 확정되지 않았습니다. 이 화면에서는 배송비를 무료로 가정하지 않고 별도 확인 항목으로 표시합니다. 맞춤 제작 상품이라는 이유만으로 교환·환불이 일괄 제한된다고 안내하지 않습니다.'],
-  ['해외에서도 주문할 수 있나요?', '현재 구현은 한국어·원화 기준의 주문 UI입니다. 해외 배송 가능 국가, 관세·세금, 결제 통화는 아직 설정되지 않았습니다. 일본·미국·유럽 판매는 국가별 배송 및 결제 정책을 확정한 뒤 연결해야 합니다.'],
+  ['해외에서도 주문할 수 있나요?', '화면은 한/영으로 바꿀 수 있으며 가격은 원화입니다. 해외 배송 가능 국가, 관세·세금, 결제 통화는 아직 설정되지 않았습니다. 일본·미국·유럽 판매는 국가별 배송 및 결제 정책을 확정한 뒤 연결해야 합니다.'],
 ];

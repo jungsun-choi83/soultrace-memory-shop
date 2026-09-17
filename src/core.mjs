@@ -6,9 +6,10 @@ export function getProduct(id) {
 export function getVariant(product, variantId) {
   return product?.variants.find(variant => variant.id === variantId) ?? null;
 }
-export function formatMoney(value) {
+export function formatMoney(value, lang = 'ko') {
   if (!Number.isSafeInteger(value) || value < 0) throw new TypeError('금액은 0 이상의 안전한 정수여야 합니다.');
-  return new Intl.NumberFormat('ko-KR').format(value) + '원';
+  const amount = new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'ko-KR').format(value);
+  return lang === 'en' ? `₩${amount}` : `${amount}원`;
 }
 export function validQuantity(value) {
   return Number.isSafeInteger(value) && value >= 1 && value <= SHOP.maxQuantity;

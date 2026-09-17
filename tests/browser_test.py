@@ -43,6 +43,19 @@ with sync_playwright() as p:
         expect(page.locator('#product-grid').get_by_text(text, exact=False)).to_be_visible()
     assert page.evaluate('Array.from(document.images).every(i => i.complete && i.naturalWidth > 0)')
     ok('home: 3 exact prices, all images loaded, zero remote assets')
+    expect(page.locator('[data-action="lang"][data-lang="ko"]')).to_have_attribute('aria-pressed', 'true')
+    page.locator('[data-action="lang"][data-lang="en"]').click()
+    expect(page.locator('#hero-title')).to_contain_text('you can hold')
+    expect(page.locator('#product-grid')).to_contain_text('NFC Memory Card')
+    expect(page.locator('#product-grid')).to_contain_text('₩9,900')
+    expect(page.locator('#product-grid')).to_contain_text('₩24,900')
+    assert '$' not in page.locator('#product-grid').inner_text()
+    assert page.evaluate('document.documentElement.lang') == 'en'
+    assert page.evaluate('localStorage.getItem("soultrace-shop:lang:v1")') == 'en'
+    page.locator('[data-action="lang"][data-lang="ko"]').click()
+    expect(page.locator('#product-grid')).to_contain_text('24,900원')
+    assert page.evaluate('document.documentElement.lang') == 'ko'
+    ok('KO/EN toggle switches copy and keeps KRW')
     page.locator('[data-filter="carry"]').click()
     expect(page.locator('[data-product-card]')).to_have_count(1)
     expect(page.locator('[data-product-card="minibook"]')).to_be_visible()

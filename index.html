@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="./src/styles.css" />
 </head>
 <body>
-  <a class="skip-link" href="#main">본문 바로가기</a>
+  <a class="skip-link" href="#main" data-i18n="skip">본문 바로가기</a>
   <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7"/></symbol>
     <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 7h14l1 14H4L5 7Z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></symbol>
@@ -30,14 +30,18 @@
     <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 2.7 7.3L22 12l-7.3 2.7L12 22l-2.7-7.3L2 12l7.3-2.7L12 2Z"/></symbol>
   </svg>
 
-  <div class="announcement"><span>우리 아이의 이야기를, 손에 닿는 기억으로.</span><span class="announcement-note">스토어 미리보기 · 실제 결제 없음</span></div>
+  <div class="announcement"><span data-i18n="announcement">우리 아이의 이야기를, 손에 닿는 기억으로.</span><span class="announcement-note" data-i18n="announcementNote">스토어 미리보기 · 실제 결제 없음</span></div>
   <header class="site-header">
-    <a class="brand" href="#" aria-label="Soul Trace 홈">
+    <a class="brand" href="#" aria-label="Soul Trace 홈" data-i18n-aria="homeAria">
       <svg class="brand-mark" viewBox="0 0 44 42" fill="none" aria-hidden="true"><path d="M22 36C5 30 2 18 5 7c13 0 23 10 17 29Z"/><path d="M22 36C39 30 42 18 39 7c-13 0-23 10-17 29Z"/><path d="M8 10c7 7 12 15 14 26M36 10c-7 7-12 15-14 26"/></svg>
       <span>SOUL TRACE<small>THE MEMORY SHOP</small></span>
     </a>
-    <nav class="main-nav" aria-label="주 메뉴"><a href="#collection">기억 컬렉션</a><a href="#how-it-works">제작 방법</a><a href="#our-story">우리의 이야기</a></nav>
+    <nav class="main-nav" aria-label="주 메뉴" data-i18n-aria="navAria"><a href="#collection" data-i18n="navCollection">기억 컬렉션</a><a href="#how-it-works" data-i18n="navHow">제작 방법</a><a href="#our-story" data-i18n="navStory">우리의 이야기</a></nav>
     <div class="header-actions">
+      <div class="lang-toggle" role="group" aria-label="언어 선택" data-i18n-aria="langAria">
+        <button type="button" data-action="lang" data-lang="ko" aria-pressed="true">KO</button>
+        <button type="button" data-action="lang" data-lang="en" aria-pressed="false">EN</button>
+      </div>
       <button class="archive-link" type="button" data-action="archive"><svg class="icon"><use href="#i-book"/></svg><span id="archive-header-label">내 이야기</span></button>
       <button type="button" class="cart-trigger icon-button" data-action="cart" aria-label="장바구니 0개"><svg class="icon"><use href="#i-bag"/></svg><span id="cart-count" class="cart-count" hidden>0</span></button>
     </div>
@@ -47,45 +51,45 @@
     <section class="hero section-width" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="eyebrow"><span class="tiny-line"></span> FROM YOUR HEART, TO YOUR HANDS</p>
-        <h1 id="hero-title">남겨둔 마음이,<br>손에 닿는<br><em>기억이 되도록.</em></h1>
-        <p class="hero-description">소울트레이스에서 시작된 우리 아이의 이야기.<br>편지 한 장, 작은 키링, NFC 카드로<br class="mobile-break"> 더 가까이 간직하세요.</p>
-        <div class="hero-actions"><a href="#collection" class="button button-dark">우리 아이의 기억 고르기<svg class="icon"><use href="#i-arrow"/></svg></a><button class="text-button" type="button" data-action="archive">내 이야기 불러오기 <span>↗</span></button></div>
-        <div class="hero-note"><svg class="icon"><use href="#i-heart"/></svg><span>세상에 하나뿐인, 우리 아이를 위한 컬렉션</span></div>
+        <h1 id="hero-title" data-i18n="heroTitle" data-i18n-html="true">남겨둔 마음이,<br>손에 닿는<br><em>기억이 되도록.</em></h1>
+        <p class="hero-description" data-i18n="heroDescription" data-i18n-html="true">소울트레이스에서 시작된 우리 아이의 이야기.<br>편지 한 장, 작은 키링, NFC 카드로<br class="mobile-break"> 더 가까이 간직하세요.</p>
+        <div class="hero-actions"><a href="#collection" class="button button-dark"><span data-i18n="heroCta">우리 아이의 기억 고르기</span><svg class="icon"><use href="#i-arrow"/></svg></a><button class="text-button" type="button" data-action="archive"><span data-i18n="heroArchive">내 이야기 불러오기</span> <span>↗</span></button></div>
+        <div class="hero-note"><svg class="icon"><use href="#i-heart"/></svg><span data-i18n="heroNote">세상에 하나뿐인, 우리 아이를 위한 컬렉션</span></div>
       </div>
       <div class="hero-visual">
-        <div class="hero-image-frame"><img data-asset="letter-suite.webp" alt="편지와 엽서가 담긴 메모리 컬렉션 디자인 시안" fetchpriority="high" width="657" height="652" /><img class="hero-nfc-tag" data-asset="nfc-tag.png" alt="가죽 NFC 인식표 시안" width="320" height="298" /></div>
+        <div class="hero-image-frame"><img data-asset="letter-suite.webp" alt="편지와 엽서가 담긴 메모리 컬렉션 디자인 시안" data-i18n-alt="heroLetterAlt" fetchpriority="high" width="657" height="652" /><img class="hero-nfc-tag" data-asset="nfc-tag.png" alt="가죽 NFC 인식표 시안" data-i18n-alt="heroTagAlt" width="320" height="298" /></div>
         <div class="hero-stamp" aria-hidden="true"><svg class="icon"><use href="#i-paw"/></svg><span>made of<br><em>your memories</em></span><small>SOUL TRACE</small></div>
         <p class="hero-image-caption"><span>THE MEMORY COLLECTION</span><span>01 — A LOVE TO KEEP</span></p>
       </div>
     </section>
 
-    <section class="journey-strip" aria-label="맞춤 제작 안내"><div class="section-width journey-inner"><span><svg class="icon"><use href="#i-book"/></svg>남겨둔 이야기에서 시작해요</span><span><svg class="icon"><use href="#i-photo"/></svg>우리 아이만의 이름과 사진</span><span><svg class="icon"><use href="#i-heart"/></svg>오래 곁에 두는 작은 선물</span></div></section>
+    <section class="journey-strip" aria-label="맞춤 제작 안내" data-i18n-aria="journeyAria"><div class="section-width journey-inner"><span><svg class="icon"><use href="#i-book"/></svg><span data-i18n="journey1">남겨둔 이야기에서 시작해요</span></span><span><svg class="icon"><use href="#i-photo"/></svg><span data-i18n="journey2">우리 아이만의 이름과 사진</span></span><span><svg class="icon"><use href="#i-heart"/></svg><span data-i18n="journey3">오래 곁에 두는 작은 선물</span></span></div></section>
 
     <section id="collection" class="collection section-width" aria-labelledby="collection-title">
-      <div class="section-heading"><div><p class="eyebrow">THREE WAYS TO KEEP THEM CLOSE</p><h2 id="collection-title">기억을 간직하는 세 가지 방법</h2></div><p>다시 열어보고, 읽고, 함께 다니는.<br>당신에게 가장 가까운 방식을 골라보세요.</p></div>
-      <div class="collection-toolbar"><div class="filter-tabs" role="group" aria-label="상품 분류"><button type="button" class="filter-button active" data-filter="all" aria-pressed="true">모든 기억 <span>03</span></button><button type="button" class="filter-button" data-filter="nfc" aria-pressed="false">NFC 카드</button><button type="button" class="filter-button" data-filter="paper" aria-pressed="false">편지 세트</button><button type="button" class="filter-button" data-filter="carry" aria-pressed="false">키링</button></div><span class="collection-count" id="collection-count">3개의 컬렉션</span></div>
+      <div class="section-heading"><div><p class="eyebrow">THREE WAYS TO KEEP THEM CLOSE</p><h2 id="collection-title" data-i18n="collectionTitle">기억을 간직하는 세 가지 방법</h2></div><p data-i18n="collectionLead" data-i18n-html="true">다시 열어보고, 읽고, 함께 다니는.<br>당신에게 가장 가까운 방식을 골라보세요.</p></div>
+      <div class="collection-toolbar"><div class="filter-tabs" role="group" aria-label="상품 분류" data-i18n-aria="filterAria"><button type="button" class="filter-button active" data-filter="all" aria-pressed="true"><span data-i18n="filterAll">모든 기억</span> <span>03</span></button><button type="button" class="filter-button" data-filter="nfc" aria-pressed="false" data-i18n="filterNfc">NFC 카드</button><button type="button" class="filter-button" data-filter="paper" aria-pressed="false" data-i18n="filterLetter">편지 세트</button><button type="button" class="filter-button" data-filter="carry" aria-pressed="false" data-i18n="filterKeyring">키링</button></div><span class="collection-count" id="collection-count">3개의 컬렉션</span></div>
       <div id="product-grid" class="product-grid"></div>
-      <p class="concept-note">상품 이미지는 제공된 디자인 시안입니다. 최종 구성·소재·제작 일정은 실판매 전 확정됩니다.</p>
+      <p class="concept-note" data-i18n="conceptNote">상품 이미지는 제공된 디자인 시안입니다. 최종 구성·소재·제작 일정은 실판매 전 확정됩니다.</p>
     </section>
 
     <section id="our-story" class="story-section section-width" aria-labelledby="story-title">
-      <div class="story-visual"><img data-asset="mini-book-lifestyle.webp" alt="가방에 달아 가까이 간직하는 크림색 미니 메모리북 키링 디자인 시안" loading="lazy" width="212" height="259"/><span class="story-photo-label">SMALL ENOUGH TO CARRY.<br>MEANINGFUL ENOUGH TO KEEP.</span></div>
-      <div class="story-copy"><p class="eyebrow">LITTLE BOOK, A WHOLE LOT OF LOVE</p><h2 id="story-title">함께한 순간들을<br>가까운 곳에.</h2><p>첫 만남의 표정, 좋아하던 자리,<br>이름을 부를 때 돌아보던 얼굴.</p><p>작고 평범해서 더 소중한 장면들을<br>우리만의 작은 책에 차곡차곡 담아보세요.</p><button type="button" class="text-button underlined" data-action="product" data-product="minibook">키링 만나보기<svg class="icon"><use href="#i-arrow"/></svg></button><span class="story-signature">Always, a little closer.</span></div>
+      <div class="story-visual"><img data-asset="mini-book-lifestyle.webp" alt="가방에 달아 가까이 간직하는 크림색 미니 메모리북 키링 디자인 시안" data-i18n-alt="storyImgAlt" loading="lazy" width="212" height="259"/><span class="story-photo-label">SMALL ENOUGH TO CARRY.<br>MEANINGFUL ENOUGH TO KEEP.</span></div>
+      <div class="story-copy"><p class="eyebrow">LITTLE BOOK, A WHOLE LOT OF LOVE</p><h2 id="story-title" data-i18n="storyTitle" data-i18n-html="true">함께한 순간들을<br>가까운 곳에.</h2><p data-i18n="storyP1" data-i18n-html="true">첫 만남의 표정, 좋아하던 자리,<br>이름을 부를 때 돌아보던 얼굴.</p><p data-i18n="storyP2" data-i18n-html="true">작고 평범해서 더 소중한 장면들을<br>우리만의 작은 책에 차곡차곡 담아보세요.</p><button type="button" class="text-button underlined" data-action="product" data-product="minibook"><span data-i18n="storyCta">키링 만나보기</span><svg class="icon"><use href="#i-arrow"/></svg></button><span class="story-signature">Always, a little closer.</span></div>
     </section>
 
-    <section id="how-it-works" class="how-section section-width" aria-labelledby="how-title"><div class="center-heading"><p class="eyebrow">YOUR STORY, BEAUTIFULLY KEPT</p><h2 id="how-title">우리 아이의 선물이 되기까지</h2><p>이미 남겨둔 마음에, 나만의 작은 선택을 더해요.</p></div><div class="steps-grid"><article><span class="step-number">01</span><svg class="icon step-icon"><use href="#i-book"/></svg><h3>이야기를 불러오고</h3><p>소울트레이스의 편지와 사진으로 시작해요.<br>지금은 예시 이야기로 경험할 수 있어요.</p></article><article><span class="step-number">02</span><svg class="icon step-icon"><use href="#i-spark"/></svg><h3>우리답게 고르고</h3><p>마음에 드는 컬렉션과 색을 골라<br>아이의 이름과 사진을 담아주세요.</p></article><article><span class="step-number">03</span><svg class="icon step-icon"><use href="#i-letter"/></svg><h3>담긴 마음을 확인해요</h3><p>장바구니에서 맞춤 내용을 확인해요.<br>현재는 주문 미리보기까지 제공해요.</p></article></div></section>
+    <section id="how-it-works" class="how-section section-width" aria-labelledby="how-title"><div class="center-heading"><p class="eyebrow">YOUR STORY, BEAUTIFULLY KEPT</p><h2 id="how-title" data-i18n="howTitle">우리 아이의 선물이 되기까지</h2><p data-i18n="howLead">이미 남겨둔 마음에, 나만의 작은 선택을 더해요.</p></div><div class="steps-grid"><article><span class="step-number">01</span><svg class="icon step-icon"><use href="#i-book"/></svg><h3 data-i18n="step1Title">이야기를 불러오고</h3><p data-i18n="step1Body" data-i18n-html="true">소울트레이스의 편지와 사진으로 시작해요.<br>지금은 예시 이야기로 경험할 수 있어요.</p></article><article><span class="step-number">02</span><svg class="icon step-icon"><use href="#i-spark"/></svg><h3 data-i18n="step2Title">우리답게 고르고</h3><p data-i18n="step2Body" data-i18n-html="true">마음에 드는 컬렉션과 색을 골라<br>아이의 이름과 사진을 담아주세요.</p></article><article><span class="step-number">03</span><svg class="icon step-icon"><use href="#i-letter"/></svg><h3 data-i18n="step3Title">담긴 마음을 확인해요</h3><p data-i18n="step3Body" data-i18n-html="true">장바구니에서 맞춤 내용을 확인해요.<br>현재는 주문 미리보기까지 제공해요.</p></article></div></section>
 
-    <section class="archive-banner section-width"><div class="archive-banner-icon"><svg class="icon"><use href="#i-paw"/></svg></div><div><p class="eyebrow">YOUR STORY IS THE BEGINNING</p><h2>이미 소울트레이스에 마음을 남기셨나요?</h2><p>그 이야기가 우리 아이만의 컬렉션을 만드는 시작이 됩니다.</p></div><button type="button" class="button button-light" data-action="archive">내 이야기 연결하기<svg class="icon"><use href="#i-arrow"/></svg></button></section>
+    <section class="archive-banner section-width"><div class="archive-banner-icon"><svg class="icon"><use href="#i-paw"/></svg></div><div><p class="eyebrow">YOUR STORY IS THE BEGINNING</p><h2 data-i18n="archiveBannerTitle">이미 소울트레이스에 마음을 남기셨나요?</h2><p data-i18n="archiveBannerBody">그 이야기가 우리 아이만의 컬렉션을 만드는 시작이 됩니다.</p></div><button type="button" class="button button-light" data-action="archive"><span data-i18n="archiveBannerCta">내 이야기 연결하기</span><svg class="icon"><use href="#i-arrow"/></svg></button></section>
 
-    <section id="faq" class="faq-section section-width" aria-labelledby="faq-title"><div><p class="eyebrow">A LITTLE HELP</p><h2 id="faq-title">궁금한 이야기</h2><p>주문 전에 알아두면 좋은 것들.</p><button type="button" class="text-button underlined" data-action="info" data-info="support">운영 및 문의 안내<svg class="icon"><use href="#i-arrow"/></svg></button></div><div id="faq-list" class="faq-list"></div></section>
+    <section id="faq" class="faq-section section-width" aria-labelledby="faq-title"><div><p class="eyebrow">A LITTLE HELP</p><h2 id="faq-title" data-i18n="faqTitle">궁금한 이야기</h2><p data-i18n="faqLead">주문 전에 알아두면 좋은 것들.</p><button type="button" class="text-button underlined" data-action="info" data-info="support"><span data-i18n="supportCta">운영 및 문의 안내</span><svg class="icon"><use href="#i-arrow"/></svg></button></div><div id="faq-list" class="faq-list"></div></section>
 
-    <section class="closing-note"><svg class="icon"><use href="#i-heart"/></svg><p>함께한 이야기는,<br><em>저마다의 방식으로 남으니까.</em></p><span>YOUR PET. THEIR STORY. STILL GROWING.</span></section>
+    <section class="closing-note"><svg class="icon"><use href="#i-heart"/></svg><p data-i18n="closing" data-i18n-html="true">함께한 이야기는,<br><em>저마다의 방식으로 남으니까.</em></p><span>YOUR PET. THEIR STORY. STILL GROWING.</span></section>
   </main>
 
-  <footer class="site-footer"><div class="section-width footer-main"><div class="footer-brand"><a href="#" class="brand"><span>SOUL TRACE<small>THE MEMORY SHOP</small></span></a><p>소중한 관계를 간직하는 작은 방식.<br>A memory you can hold.</p></div><div class="footer-nav"><a href="#collection">기억 컬렉션</a><a href="#how-it-works">제작 방법</a><a href="#faq">자주 묻는 질문</a><button type="button" data-action="info" data-info="privacy">개인정보 안내</button><button type="button" data-action="info" data-info="terms">이용 및 구매 안내</button></div><div class="footer-status"><span class="status-dot"></span> PREVIEW STORE<p>한국어 · KRW ₩<br>실제 주문 및 결제 미연동</p></div></div><div class="section-width footer-bottom"><span>© 2026 Soul Trace · Eternal Beam</span><span>사업자·고객센터·배송 정책은 실판매 전 등록 예정입니다.</span><span>MADE FOR YOUR ONE AND ONLY.</span></div></footer>
+  <footer class="site-footer"><div class="section-width footer-main"><div class="footer-brand"><a href="#" class="brand"><span>SOUL TRACE<small>THE MEMORY SHOP</small></span></a><p data-i18n="footerBlurb" data-i18n-html="true">소중한 관계를 간직하는 작은 방식.<br>A memory you can hold.</p></div><div class="footer-nav"><a href="#collection" data-i18n="navCollection">기억 컬렉션</a><a href="#how-it-works" data-i18n="navHow">제작 방법</a><a href="#faq" data-i18n="footerFaq">자주 묻는 질문</a><button type="button" data-action="info" data-info="privacy" data-i18n="footerPrivacy">개인정보 안내</button><button type="button" data-action="info" data-info="terms" data-i18n="footerTerms">이용 및 구매 안내</button></div><div class="footer-status"><span class="status-dot"></span> PREVIEW STORE<p data-i18n="footerStatus" data-i18n-html="true">한국어 · KRW ₩<br>실제 주문 및 결제 미연동</p></div></div><div class="section-width footer-bottom"><span>© 2026 Soul Trace · Eternal Beam</span><span data-i18n="footerLegal">사업자·고객센터·배송 정책은 실판매 전 등록 예정입니다.</span><span>MADE FOR YOUR ONE AND ONLY.</span></div></footer>
   <dialog id="shop-dialog" aria-labelledby="dialog-title"></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-  <noscript><div class="noscript">상품과 장바구니를 이용하려면 자바스크립트를 활성화해주세요. 이 버전에서는 실제 결제가 발생하지 않습니다.</div></noscript>
+  <noscript><div class="noscript" data-i18n="noscript">상품과 장바구니를 이용하려면 자바스크립트를 활성화해주세요. 이 버전에서는 실제 결제가 발생하지 않습니다.</div></noscript>
   <script type="module" src="./src/app.mjs"></script>
 </body>
 </html>

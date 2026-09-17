@@ -9,7 +9,7 @@ await cp(resolve(root, 'src'), resolve(dist, 'src'), { recursive: true });
 await cp(resolve(root, 'assets'), resolve(dist, 'assets'), { recursive: true });
 const html = await readFile(resolve(root, 'index.html'), 'utf8');
 await writeFile(resolve(dist, 'index.html'), html);
-const sourceNames = ['catalog.mjs', 'core.mjs', 'app.mjs'];
+const sourceNames = ['catalog.mjs', 'core.mjs', 'i18n.mjs', 'app.mjs'];
 const modules = await Promise.all(sourceNames.map(async name => (await readFile(resolve(root, 'src', name), 'utf8')).replace(/^import .*;\s*$/gm, '').replace(/^export /gm, '')));
 const css = await readFile(resolve(root, 'src/styles.css'), 'utf8');
 const assets = {};
