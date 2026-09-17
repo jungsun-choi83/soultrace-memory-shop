@@ -1,0 +1,179 @@
+
+> soultrace-memory-shop@0.1.0 check
+> node --check src/app.mjs && node --check src/core.mjs && node --check src/catalog.mjs && npm test && npm run build
+
+
+> soultrace-memory-shop@0.1.0 test
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: three exact user prices and stable IDs
+ok 1 - three exact user prices and stable IDs
+  ---
+  duration_ms: 4.176611
+  type: 'test'
+  ...
+# Subtest: all products have unique and valid variants
+ok 2 - all products have unique and valid variants
+  ---
+  duration_ms: 0.347682
+  type: 'test'
+  ...
+# Subtest: unknown product and option are rejected
+ok 3 - unknown product and option are rejected
+  ---
+  duration_ms: 0.580261
+  type: 'test'
+  ...
+# Subtest: KRW formatting uses integer arithmetic
+ok 4 - KRW formatting uses integer arithmetic
+  ---
+  duration_ms: 21.960166
+  type: 'test'
+  ...
+# Subtest: quantity must be numeric integer between 1 and 9
+ok 5 - quantity must be numeric integer between 1 and 9
+  ---
+  duration_ms: 0.186805
+  type: 'test'
+  ...
+# Subtest: pet name required and length checked
+ok 6 - pet name required and length checked
+  ---
+  duration_ms: 0.147473
+  type: 'test'
+  ...
+# Subtest: message and letter lengths bounded
+ok 7 - message and letter lengths bounded
+  ---
+  duration_ms: 0.095649
+  type: 'test'
+  ...
+# Subtest: cart creation trims text and generates no PII in ID
+ok 8 - cart creation trims text and generates no PII in ID
+  ---
+  duration_ms: 4.869705
+  type: 'test'
+  ...
+# Subtest: arbitrary remote or javascript image URLs rejected
+ok 9 - arbitrary remote or javascript image URLs rejected
+  ---
+  duration_ms: 1.745179
+  type: 'test'
+  ...
+# Subtest: addLine does not mutate the original cart
+ok 10 - addLine does not mutate the original cart
+  ---
+  duration_ms: 0.429996
+  type: 'test'
+  ...
+# Subtest: cart maximum enforced
+ok 11 - cart maximum enforced
+  ---
+  duration_ms: 0.328714
+  type: 'test'
+  ...
+# Subtest: sum exact three prices with no assumed free shipping
+ok 12 - sum exact three prices with no assumed free shipping
+  ---
+  duration_ms: 0.238094
+  type: 'test'
+  ...
+# Subtest: client-injected price never changes subtotal
+ok 13 - client-injected price never changes subtotal
+  ---
+  duration_ms: 0.241269
+  type: 'test'
+  ...
+# Subtest: quantity update immutable and bounded
+ok 14 - quantity update immutable and bounded
+  ---
+  duration_ms: 0.173461
+  type: 'test'
+  ...
+# Subtest: invalid cart rows cause totals to fail closed
+ok 15 - invalid cart rows cause totals to fail closed
+  ---
+  duration_ms: 1.557794
+  type: 'test'
+  ...
+# Subtest: storage contains only non-personal cart metadata
+ok 16 - storage contains only non-personal cart metadata
+  ---
+  duration_ms: 0.490057
+  type: 'test'
+  ...
+# Subtest: restored cart requires personalization again
+ok 17 - restored cart requires personalization again
+  ---
+  duration_ms: 0.359512
+  type: 'test'
+  ...
+# Subtest: malformed JSON and wrong schema do not crash cart
+ok 18 - malformed JSON and wrong schema do not crash cart
+  ---
+  duration_ms: 0.367547
+  type: 'test'
+  ...
+# Subtest: tampered storage rows are sanitized and bounded
+ok 19 - tampered storage rows are sanitized and bounded
+  ---
+  duration_ms: 0.960846
+  type: 'test'
+  ...
+# Subtest: duplicate IDs rejected on restoration
+ok 20 - duplicate IDs rejected on restoration
+  ---
+  duration_ms: 0.139581
+  type: 'test'
+  ...
+# Subtest: HTML injection and attribute escape
+ok 21 - HTML injection and attribute escape
+  ---
+  duration_ms: 0.393084
+  type: 'test'
+  ...
+# Subtest: delivery validation accepts test-only address
+ok 22 - delivery validation accepts test-only address
+  ---
+  duration_ms: 0.176515
+  type: 'test'
+  ...
+# Subtest: invalid email, phone, postcode, missing address rejected
+ok 23 - invalid email, phone, postcode, missing address rejected
+  ---
+  duration_ms: 0.22509
+  type: 'test'
+  ...
+# Subtest: uploads reject wrong types and oversized files
+ok 24 - uploads reject wrong types and oversized files
+  ---
+  duration_ms: 0.108463
+  type: 'test'
+  ...
+# Subtest: production payments are not a configurable demo toggle
+ok 25 - production payments are not a configurable demo toggle
+  ---
+  duration_ms: 0.052846
+  type: 'test'
+  ...
+# Subtest: photo-based products require a photo or explicitly selected demo image
+ok 26 - photo-based products require a photo or explicitly selected demo image
+  ---
+  duration_ms: 1.726339
+  type: 'test'
+  ...
+1..26
+# tests 26
+# suites 0
+# pass 26
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 141.40331
+
+> soultrace-memory-shop@0.1.0 build
+> node scripts/build.mjs
+
+Built dist/ for static hosting and preview.html for double-click/offline preview.

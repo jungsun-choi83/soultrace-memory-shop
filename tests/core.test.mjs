@@ -1,0 +1,39 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { PRODUCTS, SHOP } from '../src/catalog.mjs';
+import { getProduct, getVariant, formatMoney, validQuantity, validatePersonalization, safePhotoSource, createLine, addLine, changeQuantity, calculateCart, serializeCart, restoreCart, validateDelivery, validateFileMetadata, escapeHtml } from '../src/core.mjs';
+const content = { name: '보리', message: '고마워', letter: '내 편지', photo: '', sample: true };
+const delivery = { name: '테스트', email: 'sample@example.test', phone: '010-0000-0000', postal: '00000', address: '테스트용 가상 주소' };
+
+test('three exact user prices and stable IDs', () => { assert.deepEqual(PRODUCTS.map(p => p.price), [9900,24900,49900]); assert.deepEqual(PRODUCTS.map(p => p.id), ['nfc','letter','minibook']); assert.match(getProduct('letter').details[0][1], /편지 · 엽서 · NFC 인식표/); });
+test('all products have unique and valid variants', () => { for (const p of PRODUCTS) { assert.ok(p.variants.length); assert.equal(new Set(p.variants.map(v => v.id)).size,p.variants.length); } });
+test('unknown product and option are rejected', () => { assert.equal(getProduct('missing'),null); assert.equal(getVariant(getProduct('letter'),'cream'),null); assert.throws(() => createLine('letter','cream',1,content)); });
+test('KRW formatting uses integer arithmetic', () => { assert.equal(formatMoney(24900),'24,900원'); assert.equal(formatMoney(134700),'134,700원'); assert.throws(() => formatMoney(-1)); assert.throws(() => formatMoney(1.2)); });
+test('quantity must be numeric integer between 1 and 9', () => { for (const v of [0,-1,1.1,10,'1',NaN,Infinity]) assert.equal(validQuantity(v),false); assert.ok(validQuantity(1)); assert.ok(validQuantity(9)); });
+test('pet name required and length checked', () => { assert.ok(validatePersonalization({...content,name:' '})); assert.ok(validatePersonalization({...content,name:'가'.repeat(21)})); assert.equal(validatePersonalization(content),null); });
+test('message and letter lengths bounded', () => { assert.ok(validatePersonalization({...content,message:'가'.repeat(121)})); assert.ok(validatePersonalization({...content,letter:'가'.repeat(2001)})); assert.equal(validatePersonalization({...content,message:'가'.repeat(120)}),null); });
+test('cart creation trims text and generates no PII in ID', () => { const line=createLine('letter','sage',1,{...content,name:' 보리 '}); assert.equal(line.personalization.name,'보리'); assert.ok(!line.id.includes('보리')); });
+test('arbitrary remote or javascript image URLs rejected', () => { for(const s of ['https://tracker.example/x','javascript:alert(1)','data:image/svg+xml;base64,PHN2Zz4=','blob:malicious']) assert.equal(safePhotoSource(s),''); assert.equal(safePhotoSource('data:image/jpeg;base64,YWJj'),'data:image/jpeg;base64,YWJj'); });
+test('addLine does not mutate the original cart', () => { const cart=[]; const result=addLine(cart,createLine('letter','sage',1,content)); assert.equal(cart.length,0); assert.equal(result.length,1); });
+test('cart maximum enforced', () => { assert.throws(() => addLine(Array(SHOP.maxCartLines).fill({}),{})); });
+test('sum exact three prices with no assumed free shipping', () => { const cart=PRODUCTS.map(p => createLine(p.id,p.variants[0].id,1,content)); assert.deepEqual(calculateCart(cart), {subtotal:84700,quantity:3,shipping:null,payableTotal:null}); });
+test('client-injected price never changes subtotal', () => { const line={...createLine('letter','sage',2,content),price:1,total:1}; assert.equal(calculateCart([line]).subtotal,49800); });
+test('quantity update immutable and bounded', () => { const line=createLine('minibook','cream',1,content); const next=changeQuantity([line],line.id,3); assert.equal(line.quantity,1); assert.equal(next[0].quantity,3); assert.throws(() => changeQuantity(next,line.id,0)); });
+test('invalid cart rows cause totals to fail closed', () => { assert.throws(() => calculateCart([{productId:'fake',variantId:'sage',quantity:1}])); assert.throws(() => calculateCart([{productId:'letter',variantId:'sage',quantity:-1}])); });
+test('storage contains only non-personal cart metadata', () => { const serialized=serializeCart([createLine('letter','sage',1,content)]); for(const key of ['보리','고마워','내 편지','personalization','photo','address','email']) assert.ok(!serialized.includes(key)); });
+test('restored cart requires personalization again', () => { const line=createLine('letter','sage',1,content); const restored=restoreCart(serializeCart([line])); assert.equal(restored.length,1); assert.equal(restored[0].personalization,null); assert.equal(restored[0].quantity,1); });
+test('malformed JSON and wrong schema do not crash cart', () => { for(const raw of [null,'{','null','[]','{"version":2,"lines":[]}', 'x'.repeat(20001)]) assert.deepEqual(restoreCart(raw),[]); });
+test('tampered storage rows are sanitized and bounded', () => { const raw=JSON.stringify({version:1,lines:[{id:'bad',productId:'fake',variantId:'sage',quantity:1},{id:'valid',productId:'letter',variantId:'sage',quantity:2,price:1,personalization:content}]}); const result=restoreCart(raw); assert.equal(result.length,1); assert.equal(result[0].price,undefined); assert.equal(result[0].personalization,null); });
+test('duplicate IDs rejected on restoration', () => { const row={id:'same',productId:'letter',variantId:'sage',quantity:1}; assert.equal(restoreCart(JSON.stringify({version:1,lines:[row,row]})).length,1); });
+test('HTML injection and attribute escape', () => { assert.equal(escapeHtml('<img src=x onerror="x">'), '&lt;img src=x onerror=&quot;x&quot;&gt;'); assert.equal(escapeHtml("'&"),'&#39;&amp;'); });
+test('delivery validation accepts test-only address', () => { assert.equal(validateDelivery(delivery),null); });
+test('invalid email, phone, postcode, missing address rejected', () => { for(const patch of [{email:'x'},{phone:'abc'},{postal:'0000'},{address:''},{name:''}]) assert.ok(validateDelivery({...delivery,...patch})); });
+test('uploads reject wrong types and oversized files', () => { assert.ok(validateFileMetadata({type:'image/svg+xml',size:40})); assert.ok(validateFileMetadata({type:'image/jpeg',size:5*1024*1024+1})); assert.ok(validateFileMetadata({type:'image/png',size:0})); assert.equal(validateFileMetadata({type:'image/webp',size:50000}),null); });
+test('production payments are not a configurable demo toggle', () => { assert.equal(SHOP.mode,'demo'); assert.equal(SHOP.shippingFee,null); });
+
+test('photo-based products require a photo or explicitly selected demo image', () => { assert.throws(() => createLine('minibook','cream',1,{...content,sample:false,letter:''})); assert.doesNotThrow(() => createLine('letter','sage',1,{...content,sample:false})); });
+test('nfc memory card accepts letter or photo, not neither', () => {
+  assert.doesNotThrow(() => createLine('nfc','ivory',1,{...content,sample:false,letter:'내 편지'}));
+  assert.doesNotThrow(() => createLine('nfc','ivory',1,{...content,sample:true,letter:''}));
+  assert.throws(() => createLine('nfc','ivory',1,{...content,sample:false,letter:'',photo:''}));
+});

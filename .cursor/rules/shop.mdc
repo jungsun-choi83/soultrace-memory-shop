@@ -1,0 +1,17 @@
+---
+description: SoulTrace shop scope, safety and brand constraints
+alwaysApply: true
+---
+Read README.md and docs/INTEGRATION.md first. Preserve working behavior and test it.
+The current project is a static frontend DEMO. Never claim checkout, archive API or authentication is live.
+Do not silently replace the stack. Products and options live in src/catalog.mjs.
+Confirmed user prices: nfc 9900, letter 24900, minibook 49900 KRW. Display order is memory card first. Letter set items: 편지 · 엽서 · NFC 인식표.
+Actual server catalog/quote must govern real transactions. Never trust client prices or totals.
+No frontend secrets, service-role credentials, fake reviews, false shipping promises or fabricated legal details.
+Never store personal photos, letters, names, addresses or tokens in localStorage or URLs.
+No analytics, external fonts, ad pixels, scraping or model training without explicit approval and privacy review.
+Use the supplied images as concept assets, not as proof of shipped products or final manufacturing specifications.
+Keep inferred product options and unconfirmed shipping/production policies clearly marked.
+Do not activate paid orders until authentication, ownership checks, quote validation, payment verification,
+idempotency, shipping rules, legal business information and final policies are implemented and tested.
+Run npm run check after code changes. Build regenerates preview.html; edit src, not generated preview.html.

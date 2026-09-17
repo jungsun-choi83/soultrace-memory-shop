@@ -1,0 +1,24 @@
+{
+  "passed": 15,
+  "failed": 0,
+  "tests": [
+    "home: 3 exact prices, all images loaded, zero remote assets",
+    "catalog category filters",
+    "explicit demo archive connect",
+    "letter personalization, escaping, variants, quantity and storage privacy",
+    "cart quantity recalculates from catalog",
+    "all 3 products: 134,700 KRW subtotal, shipping remains unknown",
+    "checkout validation, explicit demo confirmation, no charge/order/network/PII persistence",
+    "Escape closes native dialog and releases scroll lock",
+    "restoration rehydrates cart metadata only and blocks checkout until personalized",
+    "photo required for mini book, invalid type rejected, local photo preview/add works",
+    "remove last item shows empty cart",
+    "responsive home and product dialog: 320/390/768/1024/1440px without horizontal overflow",
+    "clear local demo data removes persisted cart",
+    "FAQ disclosures expand accessibly",
+    "zero JavaScript exceptions and zero HTTP(S) requests in standalone interaction run"
+  ],
+  "runtime_errors": [],
+  "external_requests": [],
+  "mode": "Chromium offline set_content; localStorage test double; real backend/payment not exercised"
+}
