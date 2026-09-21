@@ -19,9 +19,10 @@ for (const file of await readdir(resolve(root, 'assets'))) {
   const mime = ext === '.svg' ? 'image/svg+xml' : ext === '.png' ? 'image/png' : 'image/webp';
   assets[file] = `data:${mime};base64,${(await readFile(resolve(root, 'assets', file))).toString('base64')}`;
 }
-let single = html.replace('<link rel="stylesheet" href="./src/styles.css" />', `<style>${css}</style>`);
+let single = html.replace(/<link rel="stylesheet" href="\.\/src\/styles\.css(?:\?[^"]*)?" \/>/, `<style>${css}</style>`);
 single = single.replace('./assets/favicon.svg', assets['favicon.svg']);
 const bundle = `globalThis.SOULTRACE_OFFLINE_PREVIEW = true;\nglobalThis.SOULTRACE_EMBEDDED_ASSETS = ${JSON.stringify(assets)};\n${modules.join('\n\n')}`.replaceAll('</script', '<\\/script');
-single = single.replace('<script type="module" src="./src/app.mjs"></script>', `<script type="module">\n${bundle}\n</script>`);
+single = single.replace(/<script type="module" src="\.\/src\/app\.mjs(?:\?[^"]*)?"><\/script>/, `<script type="module">\n${bundle}\n</script>`);
 await writeFile(resolve(root, 'preview.html'), single);
 console.log('Built dist/ for static hosting and preview.html for double-click/offline preview.');
+if (!single.includes('SOULTRACE_EMBEDDED_ASSETS') || !single.includes('<style>')) throw new Error('preview.html build failed to inline CSS/JS');
