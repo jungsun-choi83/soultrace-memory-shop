@@ -26,7 +26,7 @@ test('Korean and English copy share the same keys', () => {
 });
 
 test('English errors stay mapped and KRW is not USD', () => {
-  assert.equal(localizeError('이 상품에는 사진이 필요해요. 예시 이야기 또는 내 사진을 선택해주세요.', 'en'), 'This item needs a photo. Choose the sample story or your own photo.');
-  assert.equal(localizeError('이 상품에는 사진이 필요해요. 예시 이야기 또는 내 사진을 선택해주세요.', 'ko'), '이 상품에는 사진이 필요해요. 예시 이야기 또는 내 사진을 선택해주세요.');
+  assert.equal(localizeError('이 상품에는 사진이 필요해요. 저장된 사진 또는 내 사진을 선택해주세요.', 'en'), 'This item needs a photo. Choose a saved photo or your own.');
+  assert.equal(localizeError('이 상품에는 사진이 필요해요. 저장된 사진 또는 내 사진을 선택해주세요.', 'ko'), '이 상품에는 사진이 필요해요. 저장된 사진 또는 내 사진을 선택해주세요.');
   assert.equal(formatMoney(24900, 'en'), '₩24,900');
 });

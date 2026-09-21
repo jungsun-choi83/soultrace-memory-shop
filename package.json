@@ -1,15 +1,19 @@
 {
   "name": "soultrace-memory-shop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "SoulTrace personalized memory-goods storefront — safe, dependency-free demo",
+  "description": "SoulTrace Memory Shop — email-verified letter selection, local demo and storefront preview",
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
     "preview": "node scripts/serve.mjs --dist",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check src/app.mjs && node --check src/core.mjs && node --check src/catalog.mjs && node --check src/i18n.mjs && npm test && npm run build"
+    "check": "node --check src/app.mjs && node --check src/archive-flow.mjs && node --check src/archive-api.mjs && node --check src/i18n.mjs && node --check server/app.mjs && npm test && npm run build",
+    "start": "node scripts/serve.mjs --dist",
+    "keygen": "node scripts/keygen.mjs"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=22.13.0"
+  }
 }

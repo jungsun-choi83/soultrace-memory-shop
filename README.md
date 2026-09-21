@@ -9,8 +9,7 @@
 ## 1. 가장 빠르게 확인
 
 `preview.html`을 브라우저로 열면 됩니다. 이미지·CSS·JS가 포함된 **오프라인 단일 파일**입니다.
-정적 미리보기 환경에서 스크립트가 제한된다면 파일을 내려받아 일반 브라우저로 열어주세요.
-네트워크 연결이나 외부 폰트·라이브러리 설치 없이 디자인과 상호작용을 확인할 수 있습니다.
+내 이야기 연결은 파일 미리보기에서도 예시 이메일로 확인할 수 있습니다. 실제 메일함·SoulTrace 서버와는 연결되지 않습니다.
 이 파일을 직접 수정하지 말고 아래 소스를 수정한 다음 `npm run build`로 다시 생성하세요.
 
 ## 2. Cursor에서 실행
@@ -32,8 +31,8 @@ npm run build   # 정적 배포용 dist/와 단일 파일 preview.html 생성
 npm run preview # dist/를 로컬에서 확인
 ```
 
-검증 환경: Node.js v22.16.0. 소스는 Node.js 20 이상을 기준으로 작성했습니다.
-개발 서버는 localhost에서만 열리고 GET/HEAD 정적 파일만 제공합니다. 주문 API가 아닙니다.
+검증 환경: Node.js v22.16.0. 소스는 Node.js **22.13 이상**을 기준으로 작성했습니다.
+`npm run dev`는 localhost에서 열리며 이메일 확인 API를 제공합니다. 주문·결제 API는 아닙니다.
 
 ## 3. 가격 및 상품 매핑
 
@@ -56,7 +55,7 @@ NFC 메모리카드는 NFC가 내장된 포토카드로, 생성된 편지 또는
 
 - PC/모바일 반응형 홈, 카테고리 필터, 편집 가능한 세 상품 카탈로그.
 - 모달 상품 상세, 색상·수량 선택, 아이 이름·메시지·편지 입력.
-- 보리의 명시적인 **예시 아카이브** 선택. 실제 로그인으로 가장하지 않습니다.
+- 이메일 확인 후 내 이야기를 고르는 연결 흐름. 기본 데모는 `bori@example.test` 같은 예시 주소와 예시 기록만 사용합니다. 실제 SoulTrace 계정 로그인으로 가장하지 않습니다.
 - JPG/PNG/WEBP 5MB 이하 대표 사진 한 장의 브라우저 내 리사이즈·미리보기.
 - 장바구니 추가, 수정, 삭제, 수량 제한 및 합계 계산.
 - 테스트 배송 정보 입력, 폼 검증, 결제가 아닌 주문 미리보기 결과.
@@ -66,7 +65,7 @@ NFC 메모리카드는 NFC가 내장된 포토카드로, 생성된 편지 또는
 
 ## 5. 데이터·결제 안전장치
 
-- **실제 결제 호출, 주문 저장, 이메일 발송 또는 파일 업로드가 없습니다.**
+- **실제 결제 호출, 주문 저장 또는 제작 요청이 없습니다.** demo 모드에서는 실제 이메일도 발송하지 않습니다.
 - localStorage에는 상품 ID/옵션/수량/임의 항목 ID와 한/영 언어 선택만 저장합니다.
 - 아이 이름·사진·편지는 탭 메모리에만 남습니다. 새로고침 후 재입력을 요구합니다.
 - 배송 정보는 화면을 닫거나 미리보기를 생성하면 지우며 주문 결과에 보관하지 않습니다.
@@ -80,31 +79,38 @@ NFC 메모리카드는 NFC가 내장된 포토카드로, 생성된 편지 또는
 
 ```text
 index.html                 메인 페이지 / 브랜드·섹션·기본 SEO
-src/catalog.mjs            상품·가격·옵션·FAQ·예시 아카이브
+src/catalog.mjs            상품·가격·옵션·FAQ
 src/core.mjs               가격·수량·저장·입력검증 순수 로직
 src/i18n.mjs               한/영 화면 문구. 가격 통화는 KRW 유지
+src/archive-api.mjs        동일 출처 API / 오프라인 예시 인증
+src/archive-flow.mjs       이메일 → 코드 → 이야기 선택 화면
+src/fixtures.mjs           공개 예시 이메일·기록만
 src/app.mjs                화면·장바구니·맞춤 편집·주문 미리보기
 src/styles.css             토큰·PC/모바일 스타일
 assets/                    첨부 시안에서 크롭·압축한 이미지
-scripts/serve.mjs           의존성 없는 로컬 정적 서버
+server/                    로컬 인증·요청제한·정적 파일 서버
+scripts/serve.mjs           로컬 서버 (demo: 예시 이메일만)
 scripts/build.mjs           정적 빌드 / 단일 HTML 생성
-preview.html               직접 열어보는 빌드 결과
-CURSOR_START.md             다음 작업용 Cursor 지시문
+preview.html               직접 열어보는 오프라인 데모
+.env.example               live 전환 시 필요한 환경 변수 이름
 docs/INTEGRATION.md         기존 SoulTrace 및 결제 연결 설계
+docs/SOULTRACE_BRIDGE.md    원 서비스 소유권 검증 계약
 docs/LAUNCH_CHECKLIST.md    실판매 전 확인 사항
 docs/TEST_REPORT.md         실제 테스트 범위와 한계
 docs/screenshots/          렌더링한 PC/모바일 화면
 .cursor/rules/shop.mdc     Cursor 작업 규칙
-tests/core.test.mjs        Node 기본 테스트 러너
+tests/core.test.mjs        카탈로그·장바구니 단위 테스트
+tests/auth.test.mjs        이메일 확인·세션 서버 테스트
 tests/i18n.test.mjs        한/영 문구·KRW 유지 테스트
 tests/browser_test.py      선택적 Playwright/Chromium UI 테스트
 ```
 
 ## 7. 아직 구현하지 않은 것
 
-실제 SoulTrace 인증·아카이브 API, 개인화 원본 파일 저장, 다중 사진/최종 인쇄 편집, PG 결제,
+실제 SoulTrace 운영 인증·개인화 원본 파일 저장, 다중 사진/최종 인쇄 편집, PG 결제,
 서버 가격/재고/쿠폰/세금/배송비 계산, 실제 주문·환불·고객 주문내역, 제작사 전달,
 QR/NFC, 운영자 화면, 해외 결제·배송 정책, 배포와 도메인 연결은 **미구현**입니다.
+이메일 확인 데모는 예시 주소와 예시 기록에 한정됩니다. 기존 사용자 DB를 조회하지 않습니다.
 웹앱의 실제 저장소·API 계약·PG 키를 확인한 뒤 연결해야 합니다.
 
 실판매용 약관과 개인정보처리방침은 기존 검토 문서의 미확정 정보를 채운 최종본으로 연결하세요.

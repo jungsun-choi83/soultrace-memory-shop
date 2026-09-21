@@ -38,3 +38,4 @@ test('nfc memory card accepts letter or photo, not neither', () => {
   assert.doesNotThrow(() => createLine('nfc','ivory',1,{...content,sample:true,letter:''}));
   assert.throws(() => createLine('nfc','ivory',1,{...content,sample:false,letter:'',photo:''}));
 });
+test('archive IDs retained only in tab memory, never localStorage serialization', () => { const line=createLine('letter','sage',1,{name:'보리',message:'m',letter:'l',photo:'',sourceArchiveId:'private-archive',sourcePhotoId:'private-photo',sourceTitle:'private title'}); assert.equal(line.personalization.sourceArchiveId,'private-archive'); for(const value of ['private-archive','private-photo','private title']) assert.ok(!serializeCart([line]).includes(value)); });

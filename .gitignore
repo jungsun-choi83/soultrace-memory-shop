@@ -3,5 +3,12 @@ dist/
 .env
 .env.*
 !.env.example
+.local/
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.log
 .DS_Store
 playwright-results/
+__pycache__/

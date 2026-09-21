@@ -1,4 +1,6 @@
-import { PRODUCTS, SHOP, SAMPLE_ARCHIVE } from './catalog.mjs';
+import { createArchiveApi } from './archive-api.mjs';
+import { createArchiveFlow } from './archive-flow.mjs';
+import { PRODUCTS, SHOP } from './catalog.mjs';
 import { getProduct, getVariant, formatMoney, createLine, addLine, changeQuantity, calculateCart, serializeCart, restoreCart, validateDelivery, validateFileMetadata, escapeHtml, meetsContentRule } from './core.mjs';
 import { readLang, persistLang, normalizeLang, copyFor, localizedProduct, localizedFaqs, localizeError } from './i18n.mjs';
 
@@ -9,15 +11,15 @@ const $ = selector => document.querySelector(selector);
 const dialog = $('#shop-dialog');
 const state = { cart: [], archive: null, filter: 'all', modal: null, infoKey: null, draft: null, productId: null, variantId: null, quantity: 1, editId: null, photoBusy: false, uploadToken: 0, previousFocus: null, result: null, lang: readLang() };
 let toastTimer;
+let archiveReturn = null;
+let archiveFlow;
+const archiveApi = createArchiveApi();
+const privacyChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('soultrace-shop-privacy-v2') : null;
 try { state.cart = restoreCart(localStorage.getItem(SHOP.cartKey)); } catch { /* Storage disabled: keep a functional in-memory cart. */ }
 const t = key => copyFor(state.lang)[key];
 const money = value => formatMoney(value, state.lang);
 const err = message => localizeError(message, state.lang);
 const productView = product => localizedProduct(product, state.lang);
-function sampleArchive() {
-  const extra = t('sampleArchive');
-  return extra ? { ...SAMPLE_ARCHIVE, message: extra.message, letter: extra.letter } : SAMPLE_ARCHIVE;
-}
 function applyStaticCopy() {
   const copy = copyFor(state.lang);
   document.documentElement.lang = state.lang === 'en' ? 'en' : 'ko';
@@ -104,6 +106,7 @@ function dialogHeader(title, eyebrow = 'SOUL TRACE MEMORY SHOP') {
 function openDialog(kind, markup, className = '') {
   if (!dialog.open) state.previousFocus = document.activeElement;
   state.modal = kind;
+  if (kind !== 'archive') delete dialog.dataset.flow;
   dialog.className = className;
   dialog.innerHTML = markup;
   if (!dialog.open) dialog.showModal();
@@ -111,7 +114,7 @@ function openDialog(kind, markup, className = '') {
   dialog.scrollTop = 0;
   $('#dialog-title')?.focus({ preventScroll: true });
 }
-function closeDialog() {
+function closePlainDialog() {
   dialog.close();
   dialog.innerHTML = ''; // Remove transient form data and image data URLs from the dialog DOM.
   document.body.style.overflow = '';
@@ -122,9 +125,42 @@ function closeDialog() {
   state.uploadToken += 1;
   if (state.previousFocus?.isConnected) state.previousFocus.focus({ preventScroll: true });
 }
+function closeDialog() {
+  if (state.modal === 'archive') {
+    archiveFlow?.cancel();
+    if (archiveReturn) { restoreProduct(); return; }
+  }
+  closePlainDialog();
+}
+function emptyDraft() { return { name: '', message: '', letter: '', photo: '', sample: false }; }
 function defaultDraft() {
-  const archive = sampleArchive();
-  return state.archive ? { name: archive.name, message: archive.message, letter: archive.letter, photo: '', sample: true } : { name: '', message: '', letter: '', photo: '', sample: false };
+  return state.archive ? { name: state.archive.name, message: state.archive.message, letter: state.archive.letter,
+    photo: state.archive.photo || '', sample: state.archive.sample === true, sourceArchiveId: state.archive.id,
+    sourcePhotoId: state.archive.photoId || '', sourceTitle: state.archive.title } : emptyDraft();
+}
+function restoreProduct(selection = null, manual = false) {
+  const saved = archiveReturn; archiveReturn = null;
+  if (saved) {
+    Object.assign(state, saved);
+    if (selection) state.draft = defaultDraft();
+    else if (manual) state.draft = saved.draft || emptyDraft();
+    state.photoBusy = false; state.uploadToken += 1;
+    renderProductDialog();
+  } else if (selection) { closePlainDialog(); document.querySelector('#collection').scrollIntoView({ behavior: 'smooth' }); }
+  else if (manual) { state.archive = null; updateHeader(); closePlainDialog(); openProduct('letter'); }
+  else closePlainDialog();
+}
+function clearPrivateContent(reason = 'expired', broadcast = false) {
+  state.archive = null;
+  state.cart = state.cart.map(line => (reason !== 'unauthenticated' || line.personalization?.sourceArchiveId) ? { ...line, personalization: null } : line);
+  if (state.draft && (reason !== 'unauthenticated' || state.draft.sourceArchiveId)) state.draft = emptyDraft();
+  if (archiveReturn?.draft && (reason !== 'unauthenticated' || archiveReturn.draft.sourceArchiveId)) archiveReturn.draft = emptyDraft();
+  state.result = null; state.uploadToken += 1; state.photoBusy = false;
+  persistCart();
+  if (state.modal === 'product' && state.draft) renderProductDialog();
+  else if (state.modal === 'cart') renderCart();
+  else if (['checkout','result'].includes(state.modal)) closePlainDialog();
+  if (broadcast) privacyChannel?.postMessage({ type: 'clear-private' });
 }
 function openProduct(productId, editId = null) {
   const product = getProduct(productId);
@@ -152,7 +188,7 @@ function renderProductDialog() {
   const letterHint = product.photoRule === 'letter-or-photo' ? t('letterOrPhoto') : t('letterOptional');
   const variantNote = product.id === 'minibook' ? t('variantBook') : product.id === 'nfc' ? t('variantNfc') : t('variantLetter');
   const markup = `${dialogHeader(t('dialogPersonalize'), 'PERSONALIZE YOUR MEMORY')}<div class="dialog-body product-detail"><div class="detail-visual">${productArt(product)}<div class="detail-gallery-note">${h(t('galleryNote'))}<br><span id="variant-note">${h(variantNote)}</span></div></div><div class="detail-info"><p class="eyebrow">${h(product.english.toUpperCase())}</p><h3>${h(view.name)}</h3><p class="product-price">${money(product.price)}</p><p class="detail-description">${h(view.description)}</p><p class="option-label">${h(t('colorLabel'))} <span class="field-help">${h(t('optionDraft'))}</span></p><div class="variant-buttons">${view.variants.map(variant => `<button type="button" class="variant-button" data-action="variant" data-variant="${variant.id}" aria-pressed="${state.variantId === variant.id}"><span class="swatch" style="--swatch:${variant.color}"></span>${h(variant.name)}</button>`).join('')}</div>
-    <form id="personalize-form" class="detail-form"><div class="form-heading"><strong>${h(t('storyHeading'))}</strong><button class="mini-link" type="button" data-action="fill-archive">${h(t('loadSample'))}</button></div><label class="field"><span>${h(t('petName'))} <small>${h(t('required20'))}</small></span><input name="petName" value="${h(draft.name)}" maxlength="20" required placeholder="${h(t('namePlaceholder'))}" autocomplete="off"></label><label class="field"><span>${h(t('oneSentence'))} <small><span id="message-count">${draft.message.length}</span>/120</small></span><textarea name="message" maxlength="120" rows="3" placeholder="${h(t('messagePlaceholder'))}">${h(draft.message)}</textarea></label>
+    <form id="personalize-form" class="detail-form"><div class="form-heading"><strong>${h(t('storyHeading'))}</strong><button class="mini-link" type="button" data-action="fill-archive">${h(t('loadSample'))}</button></div>${draft.sourceArchiveId ? `<div class="source-letter-badge">✉ ${h(draft.sourceTitle || t('selectedLetter'))}<small>${h(t('sourceLetterNote'))}</small></div>` : ''}<label class="field"><span>${h(t('petName'))} <small>${h(t('required20'))}</small></span><input name="petName" value="${h(draft.name)}" maxlength="20" required placeholder="${h(t('namePlaceholder'))}" autocomplete="off"></label><label class="field"><span>${h(t('oneSentence'))} <small><span id="message-count">${draft.message.length}</span>/120</small></span><textarea name="message" maxlength="120" rows="3" placeholder="${h(t('messagePlaceholder'))}">${h(draft.message)}</textarea></label>
     ${product.showsLetter ? `<label class="field"><span>${h(t('letterLabel'))} <small>${h(letterHint)}</small></span><textarea name="letter" maxlength="2000" rows="5" placeholder="${h(t('letterPlaceholder'))}">${h(draft.letter)}</textarea></label>` : ''}
     <span class="field-label">${h(t('photoLabel'))} <small>${h(photoHint)}</small></span><label class="photo-upload"><span id="photo-upload-visual">${photo ? `<img src="${h(photo)}" alt="${h(t('photoSelectedAlt'))}">` : icon('photo')}</span><span><p id="photo-upload-label">${photo ? (draft.sample ? t('photoSample') : t('photoMine')) : t('photoChoose')}</p><small>JPG · PNG · WEBP / 5MB</small></span><input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" aria-label="${h(t('photoAria'))}"></label><p class="field-help">${t('photoHelp')}</p>
     <div class="personalized-preview">${icon('heart')}<div><p id="personalization-title">${h(t('memoryOf')(draft.name))}</p><small id="personalization-message">${h(draft.message || t('memoryFallback'))}</small></div></div><div class="detail-quantity"><span>${h(t('quantity'))}</span><div id="detail-stepper">${stepper(state.quantity, 'detail')}</div></div><p id="product-error" class="form-error" role="alert"></p><button type="submit" class="button button-dark detail-submit"><span>${h(state.editId ? t('editCart') : t('addCart'))}</span><span id="detail-total">${money(product.price * state.quantity)}</span></button><p class="field-help">${h(t('payHelp'))}</p></form>
@@ -224,8 +260,13 @@ function renderCart() {
   openDialog('cart', `${dialogHeader(t('cartTitleN')(quantity))}<div class="cart-body">${markup}<p class="disclosure">${h(t('cartDisclosure'))}</p></div><div class="cart-footer"><div class="amount-row"><span>${h(t('subtotal'))}</span><strong>${money(subtotal)}</strong></div><div class="amount-row muted"><span>${h(t('shippingTotal'))}</span><span>${h(t('policyPending'))}</span></div><button type="button" class="button button-dark" data-action="checkout">${h(t('checkoutCta'))} ${icon('arrow')}</button><p>${h(t('previewOnly'))}</p></div>`, 'drawer');
 }
 function renderArchive() {
-  const archive = sampleArchive();
-  openDialog('archive', `${dialogHeader(t('archiveTitle'), 'FROM YOUR SOUL TRACE')}<div class="dialog-body"><p class="disclosure">${h(t('archiveDisclosure'))}</p><p class="archive-intro">${t('archiveIntro')}</p><div class="sample-archive"><div class="sample-archive-head"><img class="sample-avatar" src="${asset('pet-bori.webp')}" alt="${h(t('boriAvatarAlt'))}"><div><h3>${h(t('boriStory'))}</h3><p>${h(t('archiveDemo'))}</p></div></div><div class="sample-gallery">${archive.photos.map(file => `<img src="${asset(file)}" alt="${h(t('boriPhotoAlt'))}">`).join('')}</div><p class="sample-letter">“${h(archive.message)}”</p></div><div class="archive-actions"><button type="button" class="button button-dark" data-action="connect-sample">${h(state.archive ? t('continueSample') : t('browseSample'))} ${icon('arrow')}</button>${state.archive ? `<button type="button" class="button button-outline" data-action="disconnect">${h(t('disconnect'))}</button>` : ''}</div></div>`, 'compact');
+  if (state.modal === 'product' && state.draft) {
+    syncDraftFromFields();
+    archiveReturn = { productId: state.productId, variantId: state.variantId, quantity: state.quantity,
+      editId: state.editId, draft: { ...state.draft }, infoKey: state.infoKey };
+    state.uploadToken += 1; state.photoBusy = false;
+  } else archiveReturn = null;
+  archiveFlow.open();
 }
 function orderSummaryLines(lines) {
   return lines.map(line => {
@@ -287,9 +328,8 @@ document.addEventListener('click', event => {
     case 'remove': state.cart = state.cart.filter(line => line.id !== id); persistCart(); renderCart(); break;
     case 'edit': { const line = state.cart.find(item => item.id === id); if (line) openProduct(line.productId, id); break; }
     case 'lang': setLang(button.dataset.lang); break;
-    case 'fill-archive': state.archive = SAMPLE_ARCHIVE; state.draft = defaultDraft(); state.uploadToken += 1; state.photoBusy = false; updateHeader(); renderProductDialog(); toast(t('toastLoaded')); break;
-    case 'connect-sample': state.archive = SAMPLE_ARCHIVE; updateHeader(); closeDialog(); toast(t('toastConnected')); break;
-    case 'disconnect': state.archive = null; updateHeader(); renderArchive(); toast(t('toastDisconnected')); break;
+    case 'fill-archive': renderArchive(); break;
+    case 'disconnect': renderArchive(); break;
     case 'checkout': renderCheckout(); break;
     case 'fill-test': {
       const form = $('#checkout-form');
@@ -298,7 +338,7 @@ document.addEventListener('click', event => {
     }
     case 'info': renderInfo(info); break;
     case 'clear-local':
-      state.cart = []; state.archive = null; state.draft = null; updateHeader();
+      state.cart = []; clearPrivateContent('logout', true); archiveApi.bootstrap().then(() => archiveApi.logout()).catch(() => toast(t('toastLogoutFail'))); updateHeader();
       try { localStorage.removeItem(SHOP.cartKey); } catch { /* No storage permission. */ }
       closeDialog(); toast(t('toastCleared')); break;
   }
@@ -337,10 +377,15 @@ document.addEventListener('submit', event => {
 dialog.addEventListener('cancel', event => { event.preventDefault(); closeDialog(); });
 dialog.addEventListener('click', event => { if (event.target !== dialog) return; const rect = dialog.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeDialog(); });
 // Clear ephemeral personalization on back-forward cache entry as well, without altering cart metadata.
-window.addEventListener('pagehide', () => { state.archive = null; state.cart = state.cart.map(({ id, productId, variantId, quantity }) => ({ id, productId, variantId, quantity, personalization: null })); state.draft = null; state.result = null; if (dialog.open) closeDialog(); });
+window.addEventListener('pagehide', () => { archiveReturn = null; archiveFlow?.cancel(); state.archive = null; state.cart = state.cart.map(({ id, productId, variantId, quantity }) => ({ id, productId, variantId, quantity, personalization: null })); state.draft = null; state.result = null; if (dialog.open) closePlainDialog(); });
 window.addEventListener('pageshow', event => { if (event.persisted) { updateHeader(); } });
 document.querySelectorAll('[data-asset]').forEach(image => { image.src = asset(image.dataset.asset); });
 applyStaticCopy();
 renderFaqs();
+archiveFlow = createArchiveFlow({ api: archiveApi, openDialog, closeDialog: closePlainDialog, dialogHeader,
+  onSelected(selection) { state.archive = selection; updateHeader(); restoreProduct(selection); toast(t('toastStorySelected')(selection.name)); },
+  onCleared(reason) { clearPrivateContent(reason, reason === 'logout'); },
+  onCancelled(manual) { restoreProduct(null, manual); }, notify: toast });
+privacyChannel?.addEventListener('message', event => { if (event.data?.type === 'clear-private') { archiveFlow.cancel(); clearPrivateContent('logout'); if (state.modal === 'archive') closePlainDialog(); } });
 renderProducts();
 updateHeader();

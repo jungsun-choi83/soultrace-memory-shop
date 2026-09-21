@@ -3,7 +3,7 @@ description: SoulTrace shop scope, safety and brand constraints
 alwaysApply: true
 ---
 Read README.md and docs/INTEGRATION.md first. Preserve working behavior and test it.
-The current project is a static frontend DEMO. Never claim checkout, archive API or authentication is live.
+The current project is a storefront DEMO with an email-link archive picker. Never claim checkout or live SoulTrace authentication is production-ready.
 Do not silently replace the stack. Products and options live in src/catalog.mjs.
 Confirmed user prices: nfc 9900, letter 24900, minibook 49900 KRW. Display order is memory card first. Letter set items: 편지 · 엽서 · NFC 인식표.
 Actual server catalog/quote must govern real transactions. Never trust client prices or totals.

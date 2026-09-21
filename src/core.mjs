@@ -33,7 +33,7 @@ export function hasPhoto(personalization) {
 }
 export function meetsContentRule(product, personalization) {
   if (product?.photoRule === 'required' && !hasPhoto(personalization)) {
-    return '이 상품에는 사진이 필요해요. 예시 이야기 또는 내 사진을 선택해주세요.';
+    return '이 상품에는 사진이 필요해요. 저장된 사진 또는 내 사진을 선택해주세요.';
   }
   if (product?.photoRule === 'letter-or-photo' && !hasPhoto(personalization) && !String(personalization?.letter || '').trim()) {
     return '편지 내용 또는 사진 중 하나를 담아주세요.';
@@ -55,6 +55,9 @@ export function createLine(productId, variantId, quantity, personalization) {
       name: personalization.name.trim(), message: personalization.message.trim(),
       letter: personalization.letter.trim(), photo: safePhotoSource(personalization.photo),
       sample: personalization.sample === true,
+      sourceArchiveId: /^[a-zA-Z0-9_-]{1,128}$/.test(personalization.sourceArchiveId || '') ? personalization.sourceArchiveId : '',
+      sourcePhotoId: /^[a-zA-Z0-9_-]{1,128}$/.test(personalization.sourcePhotoId || '') ? personalization.sourcePhotoId : '',
+      sourceTitle: typeof personalization.sourceTitle === 'string' ? personalization.sourceTitle.slice(0, 120) : '',
     },
   };
 }
