@@ -6,7 +6,7 @@ import { readLang, persistLang, normalizeLang, copyFor, localizedProduct, locali
 
 const h = escapeHtml;
 const icon = (name, className = '') => `<svg class="icon ${className}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
-const asset = name => globalThis.SOULTRACE_EMBEDDED_ASSETS?.[name] ?? new URL(`../assets/${name}?v=20260922-explain`, import.meta.url).href;
+const asset = name => globalThis.SOULTRACE_EMBEDDED_ASSETS?.[name] ?? new URL(`../assets/${name}?v=20260922-seo`, import.meta.url).href;
 const $ = selector => document.querySelector(selector);
 const dialog = $('#shop-dialog');
 const state = { cart: [], archive: null, filter: 'all', modal: null, infoKey: null, draft: null, productId: null, variantId: null, quantity: 1, editId: null, photoBusy: false, uploadToken: 0, previousFocus: null, result: null, lang: readLang() };
@@ -25,6 +25,11 @@ function applyStaticCopy() {
   document.documentElement.lang = state.lang === 'en' ? 'en' : 'ko';
   document.title = copy.title;
   document.querySelector('meta[name="description"]')?.setAttribute('content', copy.metaDescription);
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', copy.title);
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', copy.metaDescription);
+  document.querySelector('meta[property="og:locale"]')?.setAttribute('content', state.lang === 'en' ? 'en_US' : 'ko_KR');
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', copy.title);
+  document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', copy.metaDescription);
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const value = copy[el.dataset.i18n];
     if (typeof value !== 'string') return;

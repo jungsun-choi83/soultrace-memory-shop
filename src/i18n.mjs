@@ -63,8 +63,8 @@ const FAQS_EN = [
 
 export const COPY = {
   ko: {
-    title: 'Soul Trace — 손에 닿는 기억',
-    metaDescription: '소울트레이스에서 남긴 마음을 편지 세트, 키링, NFC 메모리카드로. 우리 아이의 이야기를 손에 닿는 기억으로 간직하세요.',
+    title: 'Soul Trace 메모리샵 | 편지 · 키링 · NFC 카드',
+    metaDescription: '소울트레이스에서 남긴 편지를 편지 세트, 미니북 키링, NFC 메모리카드로. 같은 이메일 이야기로 이터널빔까지 이어지는 메모리 굿즈샵입니다.',
     skip: '본문 바로가기',
     homeAria: 'Soul Trace 홈',
     navAria: '주 메뉴',
@@ -260,8 +260,8 @@ export const COPY = {
     sampleArchive: null,
   },
   en: {
-    title: 'Soul Trace — A Memory You Can Hold',
-    metaDescription: 'Keep a SoulTrace story as a letter set, a keyring, or an NFC memory card. A preview store — not a live checkout.',
+    title: 'Soul Trace Memory Shop | Letter, Keyring, NFC Card',
+    metaDescription: 'Turn a SoulTrace letter into a letter set, mini-book keyring, or NFC memory card. The same email archive is designed to continue into Eternal Beam.',
     skip: 'Skip to content',
     homeAria: 'Soul Trace home',
     navAria: 'Main menu',

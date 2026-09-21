@@ -95,9 +95,10 @@ export function createApp(config, dependencies={}) {
       }
       if(!['GET','HEAD'].includes(req.method))throw new HttpError(405,'METHOD_NOT_ALLOWED','Not allowed');
       if(path==='/')path='/index.html';
-      const types={'.html':'text/html; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.webp':'image/webp','.png':'image/png','.svg':'image/svg+xml'};
+      const types={'.html':'text/html; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.webp':'image/webp','.png':'image/png','.svg':'image/svg+xml','.txt':'text/plain; charset=utf-8','.xml':'application/xml; charset=utf-8'};
       // Explicit public allowlist. NEVER expose .env, server, DB, docs or source maps.
-      if(!(path==='/index.html'||path.startsWith('/src/')||path.startsWith('/assets/'))||!types[extname(path)])throw new HttpError(404,'NOT_FOUND','Not found');
+      const publicFile=path==='/index.html'||path==='/robots.txt'||path==='/sitemap.xml';
+      if(!(publicFile||path.startsWith('/src/')||path.startsWith('/assets/'))||!types[extname(path)])throw new HttpError(404,'NOT_FOUND','Not found');
       const root=resolve(config.staticRoot||config.root);const file=resolve(root,'.'+path);
       if(!file.startsWith(root+sep) || (path.startsWith('/src/') && !file.startsWith(resolve(root,'src')+sep)) || (path.startsWith('/assets/') && !file.startsWith(resolve(root,'assets')+sep)))throw new HttpError(404,'NOT_FOUND','Not found');
       try{if(!(await stat(file)).isFile())throw new Error();const bytes=await readFile(file);res.writeHead(200,{'Content-Type':types[extname(file)],'Content-Length':bytes.length});res.end(req.method==='HEAD'?undefined:bytes);}catch{throw new HttpError(404,'NOT_FOUND','Not found');}

@@ -73,12 +73,14 @@ NFC 메모리카드는 NFC가 내장된 포토카드로, 생성된 편지 또는
 - `shippingFee: null`은 **미정**입니다. 0원/무료배송을 의미하지 않습니다.
 - 상품 가격은 클라이언트 카탈로그에서 재계산합니다. **실거래에서는 반드시 서버가 다시 검증해야 합니다.**
 - `SHOP.mode` 값을 바꿔도 실결제 기능이 생기지 않습니다. 별도 서버/PG 연결이 필요합니다.
-- robots `noindex, nofollow`는 개발 시안용이며, 보호나 접근제어 수단이 아닙니다.
+- robots.txt는 검색 수집을 허용합니다. 결제·주문 API는 따로 연결되어 있지 않습니다.
 
 ## 6. 파일 안내
 
 ```text
 index.html                 메인 페이지 / 브랜드·섹션·기본 SEO
+robots.txt                 검색 수집 허용
+sitemap.xml                공개 페이지 URL
 src/catalog.mjs            상품·가격·옵션·FAQ
 src/core.mjs               가격·수량·저장·입력검증 순수 로직
 src/i18n.mjs               한/영 화면 문구. 가격 통화는 KRW 유지

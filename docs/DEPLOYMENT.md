@@ -32,7 +32,7 @@ live는 **실제 메일 발송·기록 연동 코드를 선택하는 모드**이
 - API Cookie는 HttpOnly/SameSite=Strict/host-only, HTTPS일 때 Secure 및 __Host- 접두사를 사용합니다.
 - `dist/`는 정적 페이지/JS만 담습니다. 서버 디렉터리·.env·SQLite·문서는 정적 공개 대상이 아닙니다.
 - private 응답은 no-store. CDN에서 `/api/*`를 캐시하지 마세요.
-- noindex는 검색 제외 신호일 뿐 접근제어가 아닙니다.
+- HTML의 index/follow와 robots.txt는 검색 수집을 허용합니다. 결제·주문 접근제어가 아닙니다.
 
 ## 남은 실제 판매 업무
 

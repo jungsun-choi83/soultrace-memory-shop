@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /preview.html
+Disallow: /docs/
+Disallow: /server/
+Disallow: /tests/
+Disallow: /.cursor/
+
+Sitemap: https://jungsun-choi83.github.io/soultrace-memory-shop/sitemap.xml

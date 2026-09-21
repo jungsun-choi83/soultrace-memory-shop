@@ -9,6 +9,8 @@ await cp(resolve(root, 'src'), resolve(dist, 'src'), { recursive: true });
 await cp(resolve(root, 'assets'), resolve(dist, 'assets'), { recursive: true });
 const html = await readFile(resolve(root, 'index.html'), 'utf8');
 await writeFile(resolve(dist, 'index.html'), html);
+await cp(resolve(root, 'robots.txt'), resolve(dist, 'robots.txt'));
+await cp(resolve(root, 'sitemap.xml'), resolve(dist, 'sitemap.xml'));
 const sourceNames = ['catalog.mjs', 'fixtures.mjs', 'core.mjs', 'i18n.mjs', 'archive-api.mjs', 'archive-flow.mjs', 'app.mjs'];
 const modules = await Promise.all(sourceNames.map(async name => (await readFile(resolve(root, 'src', name), 'utf8')).replace(/^import .*;\s*$/gm, '').replace(/^export /gm, '')));
 const css = await readFile(resolve(root, 'src/styles.css'), 'utf8');
@@ -23,6 +25,6 @@ let single = html.replace(/<link rel="stylesheet" href="\.\/src\/styles\.css(?:\
 single = single.replace('./assets/favicon.svg', assets['favicon.svg']);
 const bundle = `globalThis.SOULTRACE_OFFLINE_PREVIEW = true;\nglobalThis.SOULTRACE_EMBEDDED_ASSETS = ${JSON.stringify(assets)};\n${modules.join('\n\n')}`.replaceAll('</script', '<\\/script');
 single = single.replace(/<script type="module" src="\.\/src\/app\.mjs(?:\?[^"]*)?"><\/script>/, `<script type="module">\n${bundle}\n</script>`);
-await writeFile(resolve(root, 'preview.html'), single);
+await writeFile(resolve(root, 'preview.html'), single.replace('index, follow', 'noindex, nofollow'));
 console.log('Built dist/ for static hosting and preview.html for double-click/offline preview.');
 if (!single.includes('SOULTRACE_EMBEDDED_ASSETS') || !single.includes('<style>')) throw new Error('preview.html build failed to inline CSS/JS');
