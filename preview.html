@@ -174,7 +174,7 @@ const SAMPLE_ARCHIVE = Object.freeze({
 });
 
 const FAQS = [
-  ['소울트레이스에서 만든 편지를 가져올 수 있나요?', '편지를 받았던 이메일을 입력하고 인증번호를 확인한 뒤, 저장된 이야기를 선택하는 구조입니다. 기본 데모는 예시 이메일과 예시 기록만 사용합니다. 실제 이용에는 SoulTrace 기록·소유권을 확인하는 서버 연결이 필요합니다. 이메일만 입력해서 개인정보가 바로 표시되지는 않습니다.'],
+  ['소울트레이스에서 만든 편지를 가져올 수 있나요?', '네. 소울트레이스에서 편지를 만들 때 쓴 이메일을 그대로 입력하고 확인하면, 그 계정에 쌓인 이야기를 불러와 굿즈로 제작할 수 있는 흐름입니다. 같은 이메일 아카이브는 이터널빔에서도 이어서 볼 수 있도록 설계합니다. 지금 공개 데모는 예시 주소(bori@example.test)로만 체험할 수 있고, 실제 계정 연동은 SoulTrace 서버 연결 후 가능합니다.'],
   ['사진이나 문구를 직접 바꿀 수 있나요?', '네. 상품 상세에서 이름과 문구를 입력하고, JPG·PNG·WEBP 사진 한 장을 선택해 맞춤 미리보기를 볼 수 있습니다. 사진은 이 브라우저 안에서만 처리됩니다. 최종 인쇄 영역과 여러 장 편집 기능은 제작 사양에 맞춰 확정해야 합니다.'],
   ['NFC 인식표와 메모리카드는 어떻게 다른가요?', '마음을 담은 편지 세트(24,900원) 구성은 편지, 엽서, NFC 인식표입니다. NFC 인식표는 제공된 가죽 포토 키링 시안입니다. NFC 메모리카드(9,900원)는 1번 상품으로, NFC가 내장된 포토카드이며 생성된 편지 또는 사진을 액션으로 담아 보내는 방향입니다. 현재 버전에서는 실제 NFC 쓰기·전송·앱 연동을 하지 않으며, 칩 사양과 액션 범위는 확인 예정입니다.'],
   ['지금 결제하거나 실제 상품을 주문할 수 있나요?', '현재는 스토어 시안입니다. 장바구니와 주문 미리보기까지 이용할 수 있지만 결제, 주문 접수, 제작 요청은 발생하지 않습니다. 결제대행사와 주문 서버를 연결하고 상품 정책을 확정한 뒤 실판매를 시작할 수 있습니다.'],
@@ -373,7 +373,7 @@ function localizedProduct(product, lang) {
 }
 
 const FAQS_EN = [
-  ['Can I use a letter I already made in SoulTrace?', 'Enter the email that received the letter, confirm a code, then choose a stored story. The default demo uses example.test addresses and sample records only. Live use needs a SoulTrace ownership check on the server. Typing an email does not immediately show personal data.'],
+  ['Can I use a letter I already made in SoulTrace?', 'Yes. Enter the same email you used in SoulTrace, confirm it, then load that story into a product. The same email archive is designed to carry over to Eternal Beam later. This public demo only works with example addresses like bori@example.test until the real SoulTrace server is connected.'],
   ['Can I change the photo or the words?', 'Yes. On the product page you can enter a name and a message, and choose one JPG, PNG, or WEBP photo for a preview. The photo stays in this browser. Final print areas and multi-photo editing still need to be confirmed with production specs.'],
   ['How is the NFC tag different from the memory card?', 'The letter set (KRW 24,900) includes a letter, a postcard, and an NFC tag. The tag uses the leather photo keyring concept provided. The NFC memory card (KRW 9,900) is product 1: a photocard with NFC, meant to carry a generated letter or photo as an action. This version does not write, send, or connect an app. Chip specs and action range are still to be confirmed.'],
   ['Can I pay or place a real order now?', 'This is a store preview. You can use the cart and an order preview, but payment, order intake, and production requests do not happen. Live selling can start after a payment provider, order server, and product policies are connected and confirmed.'],
@@ -827,10 +827,12 @@ function allProductIdsHaveEnglish() {
 
 
 
-/** Same-origin client. File preview uses ONLY an explicit synthetic transport, never an API-error fallback. */
+/** Same-origin client. File/GitHub Pages preview uses ONLY an explicit synthetic transport, never an API-error fallback. */
 function createArchiveApi() {
   let csrf=''; let mode='unknown'; let session=null;
-  const offline=globalThis.SOULTRACE_OFFLINE_PREVIEW===true || location.protocol==='file:';
+  const offline=globalThis.SOULTRACE_OFFLINE_PREVIEW===true
+    || location.protocol==='file:'
+    || /\.github\.io$/i.test(location.hostname);
   let offlineEmail='';let challenge=null;let lastRequest=0;
   const offlineAsset=file=>globalThis.SOULTRACE_EMBEDDED_ASSETS?.[file] || new URL(`../assets/${file}`,import.meta.url).href;
   const fail=(message,status=400,code='ERROR')=>Object.assign(new Error(message),{status,code});
@@ -904,7 +906,9 @@ function createArchiveFlow({api,openDialog,closeDialog,dialogHeader,onSelected,o
   let resendAt=0,expiryTimer=null,tickTimer=null;
   const dialog=document.querySelector('#shop-dialog');
   const isOpen=()=>dialog.open&&dialog.dataset.flow==='archive';
-  const modeLabel=()=>api.getMode()==='live'?'이메일 확인으로 내 이야기만 안전하게 불러와요.':'로컬 데모 · 실제 메일을 보내거나 고객 기록을 조회하지 않습니다.';
+  const modeLabel=()=>api.getMode()==='live'
+    ? '이메일 확인으로 소울트레이스에 남긴 이야기만 안전하게 불러와요.'
+    : '지금 화면은 데모입니다. 예시 이메일로 흐름을 확인할 수 있어요. 실제 소울트레이스·이터널빔 연동은 서버 연결 후 가능합니다.';
   function banner(){return `<div class="archive-mode ${api.getMode()==='live'?'is-live':''}">${esc(modeLabel())}</div>`;}
   function progress(){const index=step==='email'?0:step==='code'?1:2;return `<ol class="archive-progress" aria-label="이야기 연결 순서">${['이메일 입력','이메일 확인','이야기 선택'].map((label,i)=>`<li class="${i===index?'current':i<index?'complete':''}" ${i===index?'aria-current="step"':''}><span>${i<index?'✓':i+1}</span>${label}</li>`).join('')}</ol>`;}
   function status(){return `<p id="archive-error" class="form-error" role="alert">${esc(error)}</p>`;}
@@ -915,7 +919,7 @@ function createArchiveFlow({api,openDialog,closeDialog,dialogHeader,onSelected,o
   function render(){
     if(step==='loading'){shell('내 이야기를 확인하고 있어요',`<div class="archive-loading" role="status"><span class="loading-ring"></span><p>잠시만 기다려주세요.</p></div>`);return;}
     if(step==='email'){
-      shell('전에 남긴 이야기가 있나요?',`<p class="archive-intro">소울트레이스에서 편지를 받을 때 사용한 이메일을 입력해주세요.<br>비밀번호나 새 회원가입은 필요하지 않아요.</p><form id="archive-email-form"><label class="field"><span>이야기를 받았던 이메일</span><input name="archiveEmail" type="email" maxlength="254" required autocomplete="email" placeholder="your@email.com" value="${esc(email)}" ${busy?'disabled':''}></label><p class="field-help">이메일 확인 후 접근 가능한 이야기만 보여드려요.<br>이메일 확인은 마케팅 수신 신청이 아닙니다.</p><button class="button button-dark archive-primary" type="submit" ${busy?'disabled':''}>${busy?'확인 메일 요청 중…':'인증번호 받기'} <span>→</span></button></form>${api.getMode()!=='live'?`<div class="demo-entry"><strong>예시로 확인하기</strong><p>실제 이메일 대신 데모 주소를 사용해주세요.</p><button class="demo-chip" type="button" data-archive="demo-email" data-email="${DEMO_EMAIL}">보리 · 이야기 2개</button><button class="demo-chip" type="button" data-archive="demo-email" data-email="nabi@example.test">나비 · 사진 없는 이야기</button><button class="demo-chip" type="button" data-archive="demo-email" data-email="empty@example.test">저장된 이야기 없음</button></div>`:''}`);
+      shell('전에 남긴 이야기가 있나요?',`<p class="archive-intro">소울트레이스에서 편지를 만들 때 쓴 이메일을 그대로 입력하면,<br>그 편지와 사진을 불러와 굿즈로 만들 수 있어요.<br>같은 이메일 아카이브는 이터널빔에서도 이어집니다.</p><form id="archive-email-form"><label class="field"><span>이야기를 남겼던 이메일</span><input name="archiveEmail" type="email" maxlength="254" required autocomplete="email" placeholder="your@email.com" value="${esc(email)}" ${busy?'disabled':''}></label><p class="field-help">이메일 확인 후 그 계정에 쌓인 이야기만 보여드려요.<br>마케팅 수신 신청이 아닙니다.</p><button class="button button-dark archive-primary" type="submit" ${busy?'disabled':''}>${busy?'확인 메일 요청 중…':'인증번호 받기'} <span>→</span></button></form>${api.getMode()!=='live'?`<div class="demo-entry"><strong>지금은 데모로 확인하세요</strong><p>실제 소울트레이스 이메일은 아직 서버에 연결되지 않았어요.<br>아래 예시 주소로 불러오기 → 굿즈 제작 흐름을 먼저 체험해주세요.</p><button class="demo-chip" type="button" data-archive="demo-email" data-email="${DEMO_EMAIL}">보리 · 이야기 2개</button><button class="demo-chip" type="button" data-archive="demo-email" data-email="nabi@example.test">나비 · 사진 없는 이야기</button><button class="demo-chip" type="button" data-archive="demo-email" data-email="empty@example.test">저장된 이야기 없음</button></div>`:''}`);
     }else if(step==='code'){
       shell('메일함을 확인해주세요',`<p class="archive-intro"><strong>${esc(email)}</strong>로 요청한<br>6자리 인증번호를 입력해주세요.</p><form id="archive-code-form"><label class="field"><span>인증번호 <small>발급 후 10분 동안 유효</small></span><input class="otp-input" name="archiveCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required placeholder="000000" ${busy?'disabled':''}></label>${challenge?.demoCode?`<div class="demo-otp"><span>데모 인증번호 · 실제 메일 발송 없음</span><strong id="demo-code">${esc(challenge.demoCode)}</strong><button type="button" class="mini-link" data-archive="fill-code">번호 넣기</button></div>`:''}<button type="submit" class="button button-dark archive-primary" ${busy?'disabled':''}>${busy?'확인 중…':'확인하고 편지 찾기'} <span>→</span></button></form><div class="archive-resend"><button type="button" class="mini-link" data-archive="resend" ${busy?'disabled':''}>인증번호 다시 받기</button><span id="resend-count"></span><button type="button" class="mini-link" data-archive="change-email">이메일 수정</button></div><p class="field-help">메일이 보이지 않으면 스팸함도 확인해주세요. 새 번호를 받으면 이전 번호는 사용할 수 없어요.</p>`);updateCountdown();
     }else if(step==='list'){
@@ -983,7 +987,7 @@ function createArchiveFlow({api,openDialog,closeDialog,dialogHeader,onSelected,o
 
 const h = escapeHtml;
 const icon = (name, className = '') => `<svg class="icon ${className}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
-const asset = name => globalThis.SOULTRACE_EMBEDDED_ASSETS?.[name] ?? new URL(`../assets/${name}?v=20260921-nfc2`, import.meta.url).href;
+const asset = name => globalThis.SOULTRACE_EMBEDDED_ASSETS?.[name] ?? new URL(`../assets/${name}?v=20260922-archive`, import.meta.url).href;
 const $ = selector => document.querySelector(selector);
 const dialog = $('#shop-dialog');
 const state = { cart: [], archive: null, filter: 'all', modal: null, infoKey: null, draft: null, productId: null, variantId: null, quantity: 1, editId: null, photoBusy: false, uploadToken: 0, previousFocus: null, result: null, lang: readLang() };

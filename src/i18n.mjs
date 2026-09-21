@@ -53,7 +53,7 @@ export function localizedProduct(product, lang) {
 }
 
 const FAQS_EN = [
-  ['Can I use a letter I already made in SoulTrace?', 'Enter the email that received the letter, confirm a code, then choose a stored story. The default demo uses example.test addresses and sample records only. Live use needs a SoulTrace ownership check on the server. Typing an email does not immediately show personal data.'],
+  ['Can I use a letter I already made in SoulTrace?', 'Yes. Enter the same email you used in SoulTrace, confirm it, then load that story into a product. The same email archive is designed to carry over to Eternal Beam later. This public demo only works with example addresses like bori@example.test until the real SoulTrace server is connected.'],
   ['Can I change the photo or the words?', 'Yes. On the product page you can enter a name and a message, and choose one JPG, PNG, or WEBP photo for a preview. The photo stays in this browser. Final print areas and multi-photo editing still need to be confirmed with production specs.'],
   ['How is the NFC tag different from the memory card?', 'The letter set (KRW 24,900) includes a letter, a postcard, and an NFC tag. The tag uses the leather photo keyring concept provided. The NFC memory card (KRW 9,900) is product 1: a photocard with NFC, meant to carry a generated letter or photo as an action. This version does not write, send, or connect an app. Chip specs and action range are still to be confirmed.'],
   ['Can I pay or place a real order now?', 'This is a store preview. You can use the cart and an order preview, but payment, order intake, and production requests do not happen. Live selling can start after a payment provider, order server, and product policies are connected and confirmed.'],

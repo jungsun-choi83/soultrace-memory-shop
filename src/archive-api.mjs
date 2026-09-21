@@ -1,9 +1,11 @@
 import { DEMO_EMAIL, DEMO_ARCHIVES, demoList, demoDetail } from './fixtures.mjs';
 
-/** Same-origin client. File preview uses ONLY an explicit synthetic transport, never an API-error fallback. */
+/** Same-origin client. File/GitHub Pages preview uses ONLY an explicit synthetic transport, never an API-error fallback. */
 export function createArchiveApi() {
   let csrf=''; let mode='unknown'; let session=null;
-  const offline=globalThis.SOULTRACE_OFFLINE_PREVIEW===true || location.protocol==='file:';
+  const offline=globalThis.SOULTRACE_OFFLINE_PREVIEW===true
+    || location.protocol==='file:'
+    || /\.github\.io$/i.test(location.hostname);
   let offlineEmail='';let challenge=null;let lastRequest=0;
   const offlineAsset=file=>globalThis.SOULTRACE_EMBEDDED_ASSETS?.[file] || new URL(`../assets/${file}`,import.meta.url).href;
   const fail=(message,status=400,code='ERROR')=>Object.assign(new Error(message),{status,code});
