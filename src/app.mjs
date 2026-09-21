@@ -68,7 +68,7 @@ function productArt(product, thumbnail = false) {
   const view = productView(product);
   if (product.art === 'letter') return `<div class="product-art art-letter"><img src="${asset('letter-suite.webp')}" alt="${h(t('letterArtAlt'))}" loading="lazy" width="657" height="652"><img class="nfc-tag-cutout" src="${asset('photo-keyring.png')}" alt="${h(t('tagArtAlt'))}" loading="lazy" width="330" height="614"></div>`;
   if (product.art === 'book') return `<div class="product-art art-book"><img src="${asset('mini-book-front.webp')}" alt="${h(t('bookArtAlt'))}" loading="lazy" width="380" height="401"></div>`;
-  return `<div class="product-art art-nfc" role="img" aria-label="${h(t('nfcArtAria'))}"><div class="nfc-card"><img src="${asset('pet-bori.webp')}" alt="" loading="lazy"><div class="nfc-card-meta"><span class="nfc-mark">${icon('spark')} NFC</span><strong>${thumbnail ? 'OPEN' : 'A MEMORY TO OPEN'}</strong><small>SOUL TRACE</small></div></div>${thumbnail ? '' : `<p class="nfc-card-caption">${h(t('nfcCaption'))}</p>`}</div>`;
+  return `<div class="product-art art-nfc"><img src="${asset('nfc-memory-card.webp')}" alt="${h(t('nfcArtAria'))}" loading="lazy" width="768" height="1024">${thumbnail ? '' : `<p class="nfc-card-caption">${h(t('nfcCaption'))}</p>`}</div>`;
 }
 
 function renderProducts() {

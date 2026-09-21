@@ -21,7 +21,7 @@ export const PRODUCTS = Object.freeze([
     name: 'NFC 메모리카드', english: 'A Memory You Can Open', tag: 'THE NFC CARD',
     short: '편지와 사진을, 손에 닿는 카드로.',
     description: 'NFC가 내장된 포토카드입니다. 소울트레이스에서 생성된 편지 또는 사진을 액션으로 담아 보내는 방향의 작은 카드입니다. 현재 스토어 시안에서는 실제 NFC 쓰기·전송·앱 연동을 하지 않습니다.',
-    art: 'nfc', image: 'memory-stamps.webp', showsLetter: true, photoRule: 'letter-or-photo',
+    art: 'nfc', image: 'nfc-memory-card.webp', showsLetter: true, photoRule: 'letter-or-photo',
     variants: [{ id: 'ivory', name: '클래식 아이보리', color: '#e2d5bc' }],
     details: [['구성 방향', 'NFC 내장 포토카드'], ['담는 내용', '생성된 편지 또는 사진'], ['안내', '편지 세트의 NFC 인식표와는 다른 별도 상품입니다.'], ['확인 예정', '칩 종류 · 액션 종류 · 규격 · 내구성']],
   },
