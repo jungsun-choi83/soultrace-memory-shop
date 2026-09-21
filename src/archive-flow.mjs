@@ -8,9 +8,10 @@ export function createArchiveFlow({api,openDialog,closeDialog,dialogHeader,onSel
   let resendAt=0,expiryTimer=null,tickTimer=null;
   const dialog=document.querySelector('#shop-dialog');
   const isOpen=()=>dialog.open&&dialog.dataset.flow==='archive';
+  const explainOnly=true;
   const modeLabel=()=>api.getMode()==='live'
     ? '이메일 확인으로 소울트레이스에 남긴 이야기만 안전하게 불러와요.'
-    : '지금 화면은 데모입니다. 예시 이메일로 흐름을 확인할 수 있어요. 실제 소울트레이스·이터널빔 연동은 서버 연결 후 가능합니다.';
+    : '지금은 안내만 보여 드려요. 실제 불러오기는 소울트레이스 연동 후 열립니다.';
   function banner(){return `<div class="archive-mode ${api.getMode()==='live'?'is-live':''}">${esc(modeLabel())}</div>`;}
   function progress(){const index=step==='email'?0:step==='code'?1:2;return `<ol class="archive-progress" aria-label="이야기 연결 순서">${['이메일 입력','이메일 확인','이야기 선택'].map((label,i)=>`<li class="${i===index?'current':i<index?'complete':''}" ${i===index?'aria-current="step"':''}><span>${i<index?'✓':i+1}</span>${label}</li>`).join('')}</ol>`;}
   function status(){return `<p id="archive-error" class="form-error" role="alert">${esc(error)}</p>`;}
@@ -19,6 +20,21 @@ export function createArchiveFlow({api,openDialog,closeDialog,dialogHeader,onSel
     openDialog('archive',`${dialogHeader(title,'FROM YOUR SOUL TRACE')}<div class="dialog-body archive-v2">${banner()}${progress()}${content}${status()}${endActions()}</div>`,'compact');dialog.dataset.flow='archive';
   }
   function render(){
+    if(explainOnly||step==='explain'){
+      openDialog('archive',`${dialogHeader('내 이야기를 굿즈로','FROM YOUR SOUL TRACE')}<div class="dialog-body archive-v2">
+        <div class="archive-mode">연동 준비 중 · 실제 편지 불러오기는 곧 연결됩니다</div>
+        <p class="archive-intro">소울트레이스에서 편지를 만들 때 쓴 <strong>같은 이메일</strong>을 입력하면,<br>그때 남긴 편지와 사진을 그대로 불러와 메모리 상품으로 만들 수 있습니다.</p>
+        <ol class="archive-explain">
+          <li><span>01</span><div><strong>소울트레이스에서 남긴 이야기</strong><p>편지를 만들 때 사용한 이메일이 그 이야기의 열쇠입니다.</p></div></li>
+          <li><span>02</span><div><strong>굿즈샵에서 불러와 제작</strong><p>같은 이메일을 확인하면 생성된 편지를 골라 NFC 카드, 편지 세트, 키링에 담을 수 있습니다.</p></div></li>
+          <li><span>03</span><div><strong>이터널빔까지 이어지는 아카이브</strong><p>그 이메일에 이야기가 쌓입니다. 나중에 이터널빔에서도 같은 이메일을 입력하면 소울트레이스와 이 샵에서 만든 기록이 함께 보여집니다.</p></div></li>
+        </ol>
+        <p class="field-help">지금은 이메일 확인을 준비하고 있어요. 연동이 끝나면 이 화면에서 바로 불러올 수 있습니다.</p>
+        <button type="button" class="button button-dark archive-primary" data-archive="manual">사진과 문구로 먼저 만들기 <span>→</span></button>
+      </div>`,'compact');
+      dialog.dataset.flow='archive';
+      return;
+    }
     if(step==='loading'){shell('내 이야기를 확인하고 있어요',`<div class="archive-loading" role="status"><span class="loading-ring"></span><p>잠시만 기다려주세요.</p></div>`);return;}
     if(step==='email'){
       shell('전에 남긴 이야기가 있나요?',`<p class="archive-intro">소울트레이스에서 편지를 만들 때 쓴 이메일을 그대로 입력하면,<br>그 편지와 사진을 불러와 굿즈로 만들 수 있어요.<br>같은 이메일 아카이브는 이터널빔에서도 이어집니다.</p><form id="archive-email-form"><label class="field"><span>이야기를 남겼던 이메일</span><input name="archiveEmail" type="email" maxlength="254" required autocomplete="email" placeholder="your@email.com" value="${esc(email)}" ${busy?'disabled':''}></label><p class="field-help">이메일 확인 후 그 계정에 쌓인 이야기만 보여드려요.<br>마케팅 수신 신청이 아닙니다.</p><button class="button button-dark archive-primary" type="submit" ${busy?'disabled':''}>${busy?'확인 메일 요청 중…':'인증번호 받기'} <span>→</span></button></form>${api.getMode()!=='live'?`<div class="demo-entry"><strong>지금은 데모로 확인하세요</strong><p>실제 소울트레이스 이메일은 아직 서버에 연결되지 않았어요.<br>아래 예시 주소로 불러오기 → 굿즈 제작 흐름을 먼저 체험해주세요.</p><button class="demo-chip" type="button" data-archive="demo-email" data-email="${DEMO_EMAIL}">보리 · 이야기 2개</button><button class="demo-chip" type="button" data-archive="demo-email" data-email="nabi@example.test">나비 · 사진 없는 이야기</button><button class="demo-chip" type="button" data-archive="demo-email" data-email="empty@example.test">저장된 이야기 없음</button></div>`:''}`);
@@ -42,7 +58,9 @@ export function createArchiveFlow({api,openDialog,closeDialog,dialogHeader,onSel
   async function run(action){if(busy)return;busy=true;error='';const version=++epoch;render();try{await action(version);}catch(e){if(version===epoch)await handleError(e);}finally{if(version===epoch){busy=false;if(isOpen())render();}}}
   async function loadList(more=false, version=epoch){const result=await api.list(more?nextCursor:null);if(version!==epoch)return;items=more?[...items,...result.archives.filter(x=>!items.some(i=>i.id===x.id))]:result.archives;nextCursor=result.nextCursor;step='list';scheduleExpiry();}
   async function open(){
-    ++epoch;record=null;error='';busy=false;step='loading';render();const version=epoch;
+    ++epoch;record=null;error='';busy=false;
+    if(explainOnly){step='explain';render();return;}
+    step='loading';render();const version=epoch;
     try{const status=await api.bootstrap();if(version!==epoch)return;if(status.session){await loadList();}else{onCleared('unauthenticated');step='email';}if(version===epoch&&isOpen())render();}
     catch(e){if(version===epoch){error=e.message;step='error';render();}}
     clearInterval(tickTimer);tickTimer=setInterval(updateCountdown,500);

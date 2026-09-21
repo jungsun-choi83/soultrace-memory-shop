@@ -6,7 +6,7 @@ import { readLang, persistLang, normalizeLang, copyFor, localizedProduct, locali
 
 const h = escapeHtml;
 const icon = (name, className = '') => `<svg class="icon ${className}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
-const asset = name => globalThis.SOULTRACE_EMBEDDED_ASSETS?.[name] ?? new URL(`../assets/${name}?v=20260922-archive`, import.meta.url).href;
+const asset = name => globalThis.SOULTRACE_EMBEDDED_ASSETS?.[name] ?? new URL(`../assets/${name}?v=20260922-explain`, import.meta.url).href;
 const $ = selector => document.querySelector(selector);
 const dialog = $('#shop-dialog');
 const state = { cart: [], archive: null, filter: 'all', modal: null, infoKey: null, draft: null, productId: null, variantId: null, quantity: 1, editId: null, photoBusy: false, uploadToken: 0, previousFocus: null, result: null, lang: readLang() };
