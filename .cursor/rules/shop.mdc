@@ -10,7 +10,7 @@ Actual server catalog/quote must govern real transactions. Never trust client pr
 No frontend secrets, service-role credentials, fake reviews, false shipping promises or fabricated legal details.
 Never store personal photos, letters, names, addresses or tokens in localStorage or URLs.
 Language preference (ko/en) may be stored. Default UI is Korean. English UI must keep KRW, never convert to USD.
-No analytics, ad pixels, scraping or model training without explicit approval and privacy review. Pretendard (UI/brand) and Nanum Myeongjo (Korean body) CDNs are allowed.
+No analytics, ad pixels, scraping or model training without explicit approval and privacy review. Pretendard CDN is allowed for brand and body type; do not use Korean Myeongjo.
 Use the supplied images as concept assets, not as proof of shipped products or final manufacturing specifications.
 Keep inferred product options and unconfirmed shipping/production policies clearly marked.
 Do not activate paid orders until authentication, ownership checks, quote validation, payment verification,
